@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
 using PriceTargets.Core.Domain;
+using PriceTargets.Core.Models.FinanceDataProvider;
 
 namespace PriceTargets.Core.Storage.File
 {
     public class StorageFile : IStorage
     {
         private string FilePath;
-        private string Delimeter = "\t";
+        private string STRING_DELIMETER = "\t";
 
         public StorageFile(string filePath)
         {
@@ -21,7 +22,7 @@ namespace PriceTargets.Core.Storage.File
             var num = GetPaperLine(lines, paper);
             if (num < 0) return null;
 
-            if (decimal.TryParse(lines[num].Split(Delimeter)[1], out var avgPrice))
+            if (decimal.TryParse(lines[num].Split(STRING_DELIMETER)[1], out var avgPrice))
             {
                 return avgPrice;
             }
@@ -43,7 +44,7 @@ namespace PriceTargets.Core.Storage.File
 
         private int GetPaperLine(string[] lines, string paper)
         {
-            var key = paper + Delimeter;
+            var key = paper + STRING_DELIMETER;
             for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].StartsWith(key))
@@ -55,7 +56,7 @@ namespace PriceTargets.Core.Storage.File
 
         public async Task SetAveragePrice(string paper, decimal avgPrice)
         {
-            var newLine = paper.ToString() + Delimeter + avgPrice.ToString();
+            var newLine = paper.ToString() + STRING_DELIMETER + avgPrice.ToString();
             var newLines = new[] { newLine };
 
 
@@ -79,6 +80,39 @@ namespace PriceTargets.Core.Storage.File
             await System.IO.File.WriteAllLinesAsync(FilePath, lines);
         }
 
+        public async Task SavePriceTarget(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append(ticker);
+            sb.Append(STRING_DELIMETER);
 
+            sb.Append(currentPrice.O);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(currentPrice.H);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(currentPrice.L);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(currentPrice.C);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(currentPrice.PC);
+            sb.Append(STRING_DELIMETER);
+
+            sb.Append(priceTarget.TargetHigh);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(priceTarget.TargetLow);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(priceTarget.TargetMedian);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(priceTarget.TargetMean);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(priceTarget.LastUpdated.ToShortDateString());
+            sb.Append(STRING_DELIMETER);
+
+            var newLine = sb.ToString();
+
+            var lines = new[] { newLine };
+            
+            await System.IO.File.AppendAllLinesAsync(FilePath, lines);
+        }
     }
 }

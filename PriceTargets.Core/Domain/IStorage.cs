@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
+using PriceTargets.Core.Models.FinanceDataProvider;
 
 namespace PriceTargets.Core.Domain
 {
     public interface IStorage
     {
-        Task<decimal?> GetAveragePrice(string paper);
-
-        Task SetAveragePrice(string paper, decimal avgPrice);
+        Task SavePriceTarget(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget);
     }
 }
