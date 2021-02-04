@@ -69,7 +69,6 @@ namespace PriceTargets.ConsoleApp
                     await Task.Delay(2000);
                     i--;
                 }
-                if (i == 5) break;
             }
 
             var report = publisher.CreateReport(stocks.ToArray());
