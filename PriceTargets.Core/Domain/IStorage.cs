@@ -5,6 +5,12 @@ namespace PriceTargets.Core.Domain
 {
     public interface IStorage
     {
-        Task SavePriceTarget(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget);
+        Task SaveCurrentPriceAsync(string ticker, CurrentPrice currentPrice);
+
+        Task SavePriceTargetAsync(string ticker, PriceTarget priceTarget);
+
+        Task SaveRecommendationTrendAsync(string ticker, RecommendationTrend recommendationTrend);
+
+        Task SaveReportAsync(string report);
     }
 }

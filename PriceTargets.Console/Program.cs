@@ -1,6 +1,7 @@
 ﻿using PriceTargets.Core.Domain;
 using System;
-using System.Text.Json;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PriceTargets.ConsoleApp
@@ -9,7 +10,6 @@ namespace PriceTargets.ConsoleApp
     {
         static async Task Main(string[] args)
         {
-
             var output = GetOutput();
 
             var stockMarketToken = await GetStockMarketToken();
@@ -20,25 +20,15 @@ namespace PriceTargets.ConsoleApp
             var financeDataProviderToken = await GetFinanceDataProviderToken();
             var financeDataProvider = GetFinanceDataProvider(financeDataProviderToken);
 
-
-            //  if (args != null && args.Length > 1)
-            //  {
-            //      var action = args[0];
-            //
-            //      if (action == "gethistoricprice" && args.Length == 2)
-            //      {
-            //          var ticker = args[1];
-            //          await stockMarket.GetHistoricPrice(ticker);
-            //          return;
-            //      }
-            //  }
-
-
-
+            var measure = GetMeasure();
+            var publisher = GetPublisher();
 
             var tickers = await stockMarket.GetTickers();
 
             var n = tickers.Length;
+
+            var stocks = new List<Core.Models.Publisher.StockInfo>();
+
             for (int i = 0; i< n; i++)
             {
                 var ticker = tickers[i];
@@ -47,12 +37,31 @@ namespace PriceTargets.ConsoleApp
 
                 try
                 {
-
-                    var targetPrice = await financeDataProvider.GetPriceTargetAsync(ticker);
-                    await Task.Delay(1000);
                     var currentPrice = await financeDataProvider.GetCurrentPriceAsync(ticker);
                     await Task.Delay(1000);
-                    await storage.SavePriceTarget(ticker, currentPrice, targetPrice);
+                    
+                    var targetPrice = await financeDataProvider.GetPriceTargetAsync(ticker);
+                    await Task.Delay(1000);
+                    
+                    var recommendationTrends = await financeDataProvider.GetRecommendationTrendsAsync(ticker);
+                    await Task.Delay(1000);
+
+                    var priceExpectationLevel = measure.GetPriceExpectationsLevel(currentPrice, targetPrice);
+                    var recommendationTrend = recommendationTrends
+                        .OrderBy(x => x.Period)
+                        .FirstOrDefault() ?? new Core.Models.FinanceDataProvider.RecommendationTrend();
+
+                    var meanTrend =  measure.GetTrendExpectationsLevel(recommendationTrend);
+
+                    var stock = publisher.CreateStockInfo(ticker, currentPrice, targetPrice, priceExpectationLevel, recommendationTrend, meanTrend);
+                    stocks.Add(stock);
+
+                    //  await storage.SavePriceTargetAsync(ticker, targetPrice);
+                    //  await storage.SaveCurrentPriceAsync(ticker, currentPrice);
+                    //  foreach (var r in recommendationTrends)
+                    //  {
+                    //      await storage.SaveRecommendationTrendAsync(ticker, r);
+                    //  }
                 }
                 catch (System.Net.Http.HttpRequestException ex)
                 {
@@ -60,9 +69,14 @@ namespace PriceTargets.ConsoleApp
                     await Task.Delay(2000);
                     i--;
                 }
+                if (i == 5) break;
             }
 
+            var report = publisher.CreateReport(stocks.ToArray());
+            var formattedReport = publisher.FormatReport(report);
+            await storage.SaveReportAsync(formattedReport);
 
+            output.Publish($"report saved");
         }
 
         private static async Task<string> GetStockMarketToken()
@@ -99,8 +113,7 @@ namespace PriceTargets.ConsoleApp
         private static IStorage GetStorage()
         {
             var ticks = DateTime.Now.Ticks;
-            var fileName = $"targetPrice_{ticks}.txt";
-            return new PriceTargets.Core.Storage.File.StorageFile(fileName);
+            return new PriceTargets.Core.Storage.File.StorageFile();
         }
 
         private static IOutput GetOutput()
@@ -112,5 +125,17 @@ namespace PriceTargets.ConsoleApp
         {
             return new PriceTargets.Core.FinanceDataProvider.Finnhub.FinanceDataProvider(token);
         }
+        
+        private static IMeasure GetMeasure()
+        {
+            return new PriceTargets.Core.Measure.Calculator.Measure();
+        }
+
+        private static IPublisher GetPublisher()
+        {
+            return new PriceTargets.Core.Publisher.Json.Publisher();
+        }
+
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using PriceTargets.Core.Domain;
 using PriceTargets.Core.Models.FinanceDataProvider;
 
@@ -6,81 +7,25 @@ namespace PriceTargets.Core.Storage.File
 {
     public class StorageFile : IStorage
     {
-        private string FilePath;
-        private string STRING_DELIMETER = "\t";
+        private long _ticks;
 
-        public StorageFile(string filePath)
+        private const string STRING_DELIMETER = "\t";
+
+        private const string TARGET_PRICE = "targetprice";
+        private const string RECOMMENDATION_TREND = "recommendationtrend";
+        private const string CURRENT_PRICE = "currentprice";
+
+        private string GetFilename(string fileType)
         {
-            FilePath = filePath;
+            return $"{fileType}_{_ticks}.txt";
         }
 
-        public async Task<decimal?> GetAveragePrice(string paper)
+        public StorageFile()
         {
-            var lines = await GetLines();
-            if (lines == null) return null;
-
-            var num = GetPaperLine(lines, paper);
-            if (num < 0) return null;
-
-            if (decimal.TryParse(lines[num].Split(STRING_DELIMETER)[1], out var avgPrice))
-            {
-                return avgPrice;
-            }
-
-            return null;
+            _ticks = DateTime.Now.Ticks;
         }
 
-
-        private async Task<string[]> GetLines()
-        {
-            if (!System.IO.File.Exists(FilePath))
-            {
-                return null;
-            }
-
-            var lines = await System.IO.File.ReadAllLinesAsync(FilePath);
-            return lines;
-        }
-
-        private int GetPaperLine(string[] lines, string paper)
-        {
-            var key = paper + STRING_DELIMETER;
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith(key))
-                    return i;
-            }
-            return -1;
-        }
-
-
-        public async Task SetAveragePrice(string paper, decimal avgPrice)
-        {
-            var newLine = paper.ToString() + STRING_DELIMETER + avgPrice.ToString();
-            var newLines = new[] { newLine };
-
-
-            var lines = await GetLines();
-            if (lines == null)
-            {
-                await System.IO.File.AppendAllLinesAsync(FilePath, newLines);
-                return;
-
-            }
-
-            var num = GetPaperLine(lines, paper);
-            if (num < 0)
-            {
-                await System.IO.File.AppendAllLinesAsync(FilePath, newLines);
-                return;
-            }
-
-            lines[num] = newLine;
-
-            await System.IO.File.WriteAllLinesAsync(FilePath, lines);
-        }
-
-        public async Task SavePriceTarget(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget)
+        public async Task SaveCurrentPriceAsync(string ticker, CurrentPrice currentPrice)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.Append(ticker);
@@ -97,6 +42,19 @@ namespace PriceTargets.Core.Storage.File
             sb.Append(currentPrice.PC);
             sb.Append(STRING_DELIMETER);
 
+            var newLine = sb.ToString();
+
+            var lines = new[] { newLine };
+
+            await System.IO.File.AppendAllLinesAsync(GetFilename(CURRENT_PRICE), lines);
+        }
+
+        public async Task SavePriceTargetAsync(string ticker, PriceTarget priceTarget)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append(ticker);
+            sb.Append(STRING_DELIMETER);
+
             sb.Append(priceTarget.TargetHigh);
             sb.Append(STRING_DELIMETER);
             sb.Append(priceTarget.TargetLow);
@@ -111,8 +69,39 @@ namespace PriceTargets.Core.Storage.File
             var newLine = sb.ToString();
 
             var lines = new[] { newLine };
-            
-            await System.IO.File.AppendAllLinesAsync(FilePath, lines);
+
+            await System.IO.File.AppendAllLinesAsync(GetFilename(TARGET_PRICE), lines);
+        }
+
+        public async Task SaveRecommendationTrendAsync(string ticker, RecommendationTrend recommendationTrend)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append(ticker);
+            sb.Append(STRING_DELIMETER);
+
+            sb.Append(recommendationTrend.StrongBuy);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(recommendationTrend.Buy);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(recommendationTrend.Hold);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(recommendationTrend.Sell);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(recommendationTrend.StrongSell);
+            sb.Append(STRING_DELIMETER);
+            sb.Append(recommendationTrend.Period.ToShortDateString());
+            sb.Append(STRING_DELIMETER);
+
+            var newLine = sb.ToString();
+
+            var lines = new[] { newLine };
+
+            await System.IO.File.AppendAllLinesAsync(GetFilename(RECOMMENDATION_TREND), lines);
+        }
+
+        public async Task SaveReportAsync(string report)
+        {
+            await System.IO.File.WriteAllTextAsync("report.json", report);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
+using System.Linq;
 
 namespace PriceTargets.Core.FinanceDataProvider.Finnhub
 {
@@ -22,26 +23,34 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
         }
 
-        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        private async Task<T> GetJson<T>(string query)
         {
-            var query = $"{_baseUrl}/quote?symbol={ticker}&token={_token}";
             var response = await _httpClient.GetAsync(query);
             var message = response.EnsureSuccessStatusCode();
             var content = await message.Content.ReadAsStringAsync();
-            var model = JsonSerializer.Deserialize<CurrentPrice>(content, _jsonSerializerOptions);
+            var model = JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
+            return model;
+        }
 
+        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        {
+            var query = $"{_baseUrl}/quote?symbol={ticker}&token={_token}";
+            var model = await GetJson<CurrentPrice>(query);
             return model;
         }
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
             var query = $"{_baseUrl}/stock/price-target?symbol={ticker}&token={_token}";
-            var response = await _httpClient.GetAsync(query);
-            var message = response.EnsureSuccessStatusCode();
-            var content = await message.Content.ReadAsStringAsync();
-            var model = JsonSerializer.Deserialize<Dto.PriceTarget>(content, _jsonSerializerOptions);
-
+            var model = await GetJson<Dto.PriceTarget>(query);
             return model.ToDomain();
+        }
+
+        public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
+        {
+            var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={_token}";
+            var models = await GetJson<Dto.RecommendationTrend[]>(query);
+            return models.Select(x => x.ToDomain()).ToArray();
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PriceTargets.Core.Models.FinanceDataProvider
+﻿namespace PriceTargets.Core.Models.FinanceDataProvider
 {
     public class CurrentPrice
     {
