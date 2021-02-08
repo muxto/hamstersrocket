@@ -6,22 +6,30 @@ let zeros;
 let noneZeros;
 
 const fields = [
-{ name: 'Ticker',                       measureUnit: 'value'    },
-{ name: 'CurrentPrice',                 measureUnit: 'value'    },
-{ name: 'TargetPriceHigh',              measureUnit: 'value'    },
-{ name: 'TargetPriceHighPercent',       measureUnit: 'percent'  },
-{ name: 'TargetPriceMean',              measureUnit: 'value'    },
-{ name: 'TargetPriceMeanPercent',       measureUnit: 'percent'  },
-{ name: 'TargetPriceMedian',            measureUnit: 'value'    },
-{ name: 'TargetPriceMedianPercent',     measureUnit: 'percent'  },
-{ name: 'TargetPriceLow',               measureUnit: 'value'    },
-{ name: 'TargetPriceLowPercent',        measureUnit: 'percent'  },
-{ name: 'StrongBuy',                    measureUnit: 'value'    },
-{ name: 'Buy',                          measureUnit: 'value'    },
-{ name: 'Hold',                         measureUnit: 'value'    },
-{ name: 'Sell',                         measureUnit: 'value'    },
-{ name: 'StrongSell',                   measureUnit: 'value'    },
-{ name: 'RecommendationTrend',          measureUnit: 'value'    },
+{ name: 'Ticker' },
+{ name: 'CurrentPrice'              },
+{ name: 'TargetPriceHigh'           },
+{ name: 'TargetPriceHighPercent'    },
+{ name: 'TargetPriceMean'           },
+{ name: 'TargetPriceMeanPercent'    },
+{ name: 'TargetPriceMedian'         },
+{ name: 'TargetPriceMedianPercent'  },
+{ name: 'TargetPriceLow'            },
+{ name: 'TargetPriceLowPercent'     },
+{ name: 'StrongBuy'                 },
+{ name: 'Buy'                       },
+{ name: 'Hold'                      },
+{ name: 'Sell'                      },
+{ name: 'StrongSell'                },
+{ name: 'RecommendationTrend'       },
+];
+
+const viewFields = [
+{ caption: 'Ticker', shortName: 't', sortField: 'Ticker', sortFieldCaption: 'Ticker'},
+{ caption: 'Current price', shortName: 'c', sortField: 'CurrentPrice', sortFieldCaption: 'Current price'},
+{ caption: 'Target prices low - high', shortName: 'price', sortField: 'TargetPriceHigh', sortFieldCaption: 'High target price'},
+{ caption: 'Percent to current price', shortName: 'percent', sortField: 'TargetPriceHighPercent', sortFieldCaption: 'High percent'},
+{ caption: 'Recommendation trend', shortName: 'rt', sortField: 'RecommendationTrend', sortFieldCaption: 'Recommendation trend'},
 ];
 
 window.onload = function() {
@@ -32,26 +40,75 @@ window.onload = function() {
 function tableRender() {
   document.getElementById('updateDate').innerHTML = new Date(data.UpdateDate).toLocaleString();
 
+  noneZeros = noneZeros.sort(sortByField);
+  const sortedData = noneZeros.concat(zeros);
+
+
   let tableString = '<table><tr>';
-  fields.forEach(({ name }) => {
-	tableString += `<th><button type="button" data-field="${name}">${name}</button></th>`;
+  viewFields.forEach(({ caption }) => {
+	tableString += `<th>${caption}</th>`
+  });
+  tableString += '</tr>';
+  
+  tableString += '<tr>'
+  viewFields.forEach(({ sortField, sortFieldCaption }) => {
+	tableString += `<td><button type="button" sort-field="${sortField}">Order by ${sortFieldCaption}</button></td>`;
   });
   tableString += '</tr>';
     
-  noneZeros = noneZeros.sort(sortByField);
-  const sortedData = noneZeros.concat(zeros);
+	
+	
+  let val;
+  let t;
+  let c;
+  let pricel;
+  let priceh;
+  let percentl;
+  let percenth;
+  let rt;
   
   for(var i = 0; i < sortedData.length; i++) {
-    tableString += '<tr>'
-	fields.forEach(({ name, measureUnit }) => {
-		const val = (measureUnit === 'percent') 
-			? `x ${sortedData[i][name]} %` 
-			: sortedData[i][name];
-		tableString += `<td>${val}</td>`;
-	});
-    tableString += '</tr>';
+	tableString += '<tr>'; 
+	  
+    viewFields.forEach(({ shortName }) => {
+	  
+	  let row = sortedData[i];
+	  t = row['Ticker'];
+	  c = row['CurrentPrice']
+      pricel = row['TargetPriceLow'];
+      priceh = row['TargetPriceHigh']
+      percentl = row['TargetPriceLowPercent'];
+      percenth = row['TargetPriceHighPercent'];
+      rt = row['RecommendationTrend'];
+	  
+	  if (shortName === 't') 	{
+	  	val = `<a href='https://finance.yahoo.com/quote/${t}'>${t}</a>`;
+	  }
+	  if (shortName === 'c') 	{
+	  	val = c;
+	  }
+	  if (shortName === 'price') {
+		val = pricel;
+		if (pricel !== priceh) {
+		  val += ` - ${priceh}`;
+		}
+	  }
+	  if (shortName === 'percent') 	{  	
+		val = percentl.toFixed(2);
+		if (percentl !== percenth) {
+		  val += ` - ${percenth.toFixed(2)}`;
+		}
+		val = `x ${val} %`;
+	  }
+	  if (shortName === 'rt') 	{
+	  	val = rt;
+	  }
+	  
+	  tableString += `<td>${val}</td>`;
+    });
   }
-
+  
+  tableString += '</tr>';
   tableString += '</table>';
 
   document.getElementById('stocksTable').innerHTML = tableString;
@@ -71,7 +128,8 @@ return 0;
 }
 
 function sortByField({[sortField]: a}, {[sortField]: b}) {
-	if (sortField === 'RecommendationTrend') {
+	if (sortField === 'RecommendationTrend' ||
+	    sortField === 'Ticker') {
 		return compare(a, b);
 	} else {
 		return compare(b, a);
@@ -79,10 +137,10 @@ function sortByField({[sortField]: a}, {[sortField]: b}) {
 };
 
 function addListeners() {
-	const sortButtons = document.querySelectorAll('[data-field]');
+	const sortButtons = document.querySelectorAll('[sort-field]');
 	Array.from(sortButtons).forEach((button) => {
 		button.addEventListener('click', (event) => {
-			sortField = event.target.getAttribute('data-field');
+			sortField = event.target.getAttribute('sort-field');
 			tableRender();
 		});
 	});
@@ -95,7 +153,6 @@ xmlhttp.onreadystatechange = function() {
 		const stocksData = [...data.Stocks];	 
 		zeros = stocksData.filter((item) => item.RecommendationTrend === 0);
 		noneZeros = stocksData.filter((item) => item.RecommendationTrend !== 0);
-  
 		
         tableRender();
     }
