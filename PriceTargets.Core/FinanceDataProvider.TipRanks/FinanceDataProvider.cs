@@ -30,6 +30,10 @@ namespace PriceTargets.Core.FinanceDataProvider.TipRanks
         private async Task<T> GetJson<T>(string query)
         {
             var response = await _httpClient.GetAsync(query);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return default;
+            }
             var message = response.EnsureSuccessStatusCode();
             var content = await message.Content.ReadAsStringAsync();
             var model = JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
@@ -49,6 +53,11 @@ namespace PriceTargets.Core.FinanceDataProvider.TipRanks
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
             var model = await GetData(ticker);
+            if (model == null)
+            {
+                return new PriceTarget();
+            }
+
             var targetPrice = model.PtConsensus?.FirstOrDefault();
             return targetPrice.ToDomain();
         }
