@@ -1,25 +1,26 @@
-﻿using PriceTargets.Core.Models.FinanceDataProvider;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
-using System.Linq;
 using PriceTargets.Core.Domain;
+using PriceTargets.Core.Models.FinanceDataProvider;
 
-namespace PriceTargets.Core.FinanceDataProvider.Finnhub
+
+namespace PriceTargets.Core.FinanceDataProvider.TipRanks
 {
     public class FinanceDataProvider : Domain.IFinanceDataProvider
     {
-        private string _baseUrl = "https://finnhub.io/api/v1/";
-        private string _token;
+        private string _baseUrl = "https://www.tipranks.com/api/stocks";
 
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
 
-        public FinanceDataProviders Provider => FinanceDataProviders.Finnhub;
+        public FinanceDataProviders Provider => FinanceDataProviders.TipRanks;
 
-        public FinanceDataProvider(string token)
+        private Dto.Data lastData;
+
+        public FinanceDataProvider()
         {
-            _token = token;
             _httpClient = new HttpClient();
 
             _jsonSerializerOptions = new JsonSerializerOptions();
@@ -35,25 +36,31 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub
             return model;
         }
 
-        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        private async Task<Dto.Data> GetData(string ticker)
         {
-            var query = $"{_baseUrl}/quote?symbol={ticker}&token={_token}";
-            var model = await GetJson<CurrentPrice>(query);
-            return model;
+            if (lastData == null || lastData.Ticker != ticker)
+            {
+                var query = $"{_baseUrl}/getData/?name={ticker}";
+                lastData = await GetJson<Dto.Data>(query);
+            }
+            return lastData;
         }
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var query = $"{_baseUrl}/stock/price-target?symbol={ticker}&token={_token}";
-            var model = await GetJson<Dto.PriceTarget>(query);
-            return model.ToDomain();
+            var model = await GetData(ticker);
+            var targetPrice = model.PtConsensus?.FirstOrDefault();
+            return targetPrice.ToDomain();
+        }
+
+        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        {
+            throw new System.NotImplementedException();
         }
 
         public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
         {
-            var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={_token}";
-            var models = await GetJson<Dto.RecommendationTrend[]>(query);
-            return models.Select(x => x.ToDomain()).ToArray();
+            throw new System.NotImplementedException();
         }
     }
 }

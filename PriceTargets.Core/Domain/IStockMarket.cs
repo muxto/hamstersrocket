@@ -4,6 +4,6 @@ namespace PriceTargets.Core.Domain
 {
     public interface IStockMarket
     {
-        Task<string[]> GetTickers();
+        Task<string[]> GetTickersAsync();
     }
 }

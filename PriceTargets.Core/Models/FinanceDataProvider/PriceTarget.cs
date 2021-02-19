@@ -4,8 +4,6 @@ namespace PriceTargets.Core.Models.FinanceDataProvider
 {
     public class PriceTarget
     {
-        public string Ticker { get; set; }
-
         public decimal TargetHigh { get; set; }
 
         public decimal TargetLow { get; set; }
