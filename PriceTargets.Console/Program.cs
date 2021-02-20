@@ -54,8 +54,9 @@ namespace PriceTargets.ConsoleApp
 
                         var meanTrend = measure.GetTrendExpectationsLevel(companyInfo.RecommendationTrend);
 
-                        stockInfo = publisher.CreatePublishItem(
+                        stockInfo = StockInfo.Create(
                             ticker,
+                            companyInfo.Industry,
                             companyInfo.CurrentPrice,
                             companyInfo.PriceTarget,
                             priceExpectationLevel,

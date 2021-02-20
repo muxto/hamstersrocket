@@ -4,6 +4,7 @@
     {
         public string Ticker { get; set; }
         public PtConsensus[] PtConsensus { get; set; }
+        public PortfolioHoldingData PortfolioHoldingData { get; set; }
     }
     public class PtConsensus
     {
@@ -25,5 +26,10 @@
 
             return model;
         }
+    }
+
+    public class PortfolioHoldingData
+    {
+        public string SectorId { get; set; }
     }
 }

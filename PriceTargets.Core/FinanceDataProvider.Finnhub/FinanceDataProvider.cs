@@ -55,5 +55,10 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub
             var models = await GetJson<Dto.RecommendationTrend[]>(query);
             return models.Select(x => x.ToDomain()).ToArray();
         }
+
+        public Task<string> GetIndustryAsync(string ticker)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

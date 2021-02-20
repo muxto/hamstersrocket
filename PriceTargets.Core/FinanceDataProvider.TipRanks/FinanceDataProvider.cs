@@ -71,5 +71,16 @@ namespace PriceTargets.Core.FinanceDataProvider.TipRanks
         {
             throw new System.NotImplementedException();
         }
+
+        public async Task<string> GetIndustryAsync(string ticker)
+        {
+            var model = await GetData(ticker);
+            if (model == null)
+            {
+                return null;
+            }
+
+            return model.PortfolioHoldingData?.SectorId;
+        }
     }
 }
