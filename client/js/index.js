@@ -1,7 +1,7 @@
 "use strict";
 
 var xmlhttp = new XMLHttpRequest();
-var url = "/report.json";
+var url = "report.json";
 let sortField = 'RecommendationTrend';
 let data;
 let zeros;
@@ -56,13 +56,13 @@ const viewFields = [{
         sortFieldCaption: 'Current price'
     }, {
         caption: 'Target prices',
-        description: 'Low - ((median + mean) / 2) -  high',
+        description: 'Low - median -  high',
         shortName: 'price',
         sortField: 'TargetPriceHigh',
         sortFieldCaption: 'High target price'
     }, {
         caption: 'Percent to current price',
-        description: 'Low - ((median + mean) / 2) -  high',
+        description: 'Low - median -  high',
         shortName: 'percent',
         sortField: 'TargetPriceHighPercent',
         sortFieldCaption: 'High percent'
@@ -80,7 +80,7 @@ const viewFields = [{
         sortFieldCaption: 'Recommendation trend'
     }, {
         caption: 'My choice',
-        description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend > 3',
+        description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
         shortName: 'mychoice',
         sortField: 'MyChoice',
         sortFieldCaption: 'My choice percent'
