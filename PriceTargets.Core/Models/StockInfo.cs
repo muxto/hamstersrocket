@@ -1,4 +1,4 @@
-﻿namespace PriceTargets.Core.Models.Publisher
+﻿namespace PriceTargets.Core.Models
 {
     public class StockInfo
     {

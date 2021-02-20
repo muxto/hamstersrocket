@@ -1,7 +1,10 @@
-﻿using PriceTargets.Core.Domain;
-using System;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PriceTargets.Core.Domain;
+using PriceTargets.Core.Models;
+
 
 namespace PriceTargets.ConsoleApp
 {
@@ -16,19 +19,20 @@ namespace PriceTargets.ConsoleApp
 
             var storage = GetStorage();
 
-
             var financeDataProviders = await GetFinanceDataProvidersAsync();
-
             var financeDataManager = GetFinanceDataManager(financeDataProviders);
 
             var measure = GetMeasure();
             var publisher = GetPublisher();
+            var stockInfoCache = GetStockInfoCache();
 
             var tickers = await stockMarket.GetTickersAsync();
 
             var n = tickers.Length;
 
-            var stocks = new List<Core.Models.Publisher.StockInfo>();
+            var stockInfos = new List<StockInfo>();
+
+            var stockInfosFromCache = await stockInfoCache.GetAllAsync();
 
             for (int i = 0; i< n; i++)
             {
@@ -38,30 +42,29 @@ namespace PriceTargets.ConsoleApp
 
                 try
                 {
-                    var companyInfo = await financeDataManager.GetCompanyInfoAsync(ticker);
+                    var stockInfo = stockInfosFromCache.FirstOrDefault(x => x.Ticker == ticker);
+                    if (stockInfo == null)
+                    {
 
-                    var priceExpectationLevel = measure.GetPriceExpectationsLevel(
-                        companyInfo.CurrentPrice,
-                        companyInfo.PriceTarget);
+                        var companyInfo = await financeDataManager.GetCompanyInfoAsync(ticker);
 
-                    var meanTrend = measure.GetTrendExpectationsLevel(companyInfo.RecommendationTrend);
+                        var priceExpectationLevel = measure.GetPriceExpectationsLevel(
+                            companyInfo.CurrentPrice,
+                            companyInfo.PriceTarget);
 
-                    var stock = publisher.CreateStockInfo(
-                        ticker,
-                        companyInfo.CurrentPrice,
-                        companyInfo.PriceTarget,
-                        priceExpectationLevel,
-                        companyInfo.RecommendationTrend,
-                        meanTrend);
+                        var meanTrend = measure.GetTrendExpectationsLevel(companyInfo.RecommendationTrend);
 
-                    stocks.Add(stock);
+                        stockInfo = publisher.CreatePublishItem(
+                            ticker,
+                            companyInfo.CurrentPrice,
+                            companyInfo.PriceTarget,
+                            priceExpectationLevel,
+                            companyInfo.RecommendationTrend,
+                            meanTrend);
 
-                    //  await storage.SavePriceTargetAsync(ticker, targetPrice);
-                    //  await storage.SaveCurrentPriceAsync(ticker, currentPrice);
-                    //  foreach (var r in recommendationTrends)
-                    //  {
-                    //      await storage.SaveRecommendationTrendAsync(ticker, r);
-                    //  }
+                        await stockInfoCache.SaveAsync(stockInfo);
+                    }
+                    stockInfos.Add(stockInfo);
                 }
                 catch (System.Net.Http.HttpRequestException ex)
                 {
@@ -71,9 +74,10 @@ namespace PriceTargets.ConsoleApp
                 }
             }
 
-            var report = publisher.CreateReport(stocks.ToArray());
+            var report = publisher.CreateReport(stockInfos.ToArray());
             var formattedReport = publisher.FormatReport(report);
             await storage.SaveReportAsync(formattedReport);
+            await stockInfoCache.ClearAsync();
 
             output.Publish($"report saved");
         }
@@ -162,6 +166,9 @@ namespace PriceTargets.ConsoleApp
             return new PriceTargets.Core.Publisher.Json.Publisher();
         }
 
-
+        private static IStockInfoCache GetStockInfoCache()
+        {
+            return new PriceTargets.Core.Cache.File.StockInfoCache();
+        }
     }
 }

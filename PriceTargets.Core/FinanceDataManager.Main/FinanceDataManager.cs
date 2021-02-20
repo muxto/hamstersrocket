@@ -29,7 +29,6 @@ namespace PriceTargets.Core.FinanceDataManager.Main
                 .OrderBy(x => x.Period)
                 .FirstOrDefault() ?? new Core.Models.FinanceDataProvider.RecommendationTrend();
 
-
             var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
             await Task.Delay(1000);
 
