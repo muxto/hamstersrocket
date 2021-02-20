@@ -30,7 +30,7 @@ namespace PriceTargets.Core.FinanceDataManager.Main
                 .FirstOrDefault() ?? new Core.Models.FinanceDataProvider.RecommendationTrend();
 
             var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
 
             var companyInfo = new CompanyInfo()
             {
