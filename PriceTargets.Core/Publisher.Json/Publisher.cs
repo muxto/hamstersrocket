@@ -1,4 +1,5 @@
-﻿using PriceTargets.Core.Models.FinanceDataProvider;
+﻿using PriceTargets.Core.Models;
+using PriceTargets.Core.Models.FinanceDataProvider;
 using PriceTargets.Core.Models.Measure;
 using PriceTargets.Core.Models.Publisher;
 using System;
@@ -8,7 +9,7 @@ namespace PriceTargets.Core.Publisher.Json
 {
     public class Publisher : Domain.IPublisher
     {
-        public StockInfo CreateStockInfo(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget, PriceExpectationLevel priceExpectationLevel, RecommendationTrend recommendationTrend, decimal meanTrend)
+        public StockInfo CreatePublishItem(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget, PriceExpectationLevel priceExpectationLevel, RecommendationTrend recommendationTrend, decimal meanTrend)
         {
             var stock = new StockInfo()
             {

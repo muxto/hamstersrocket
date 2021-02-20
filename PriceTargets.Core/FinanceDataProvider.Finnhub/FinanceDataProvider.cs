@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
 using System.Linq;
+using PriceTargets.Core.Domain;
 
 namespace PriceTargets.Core.FinanceDataProvider.Finnhub
 {
@@ -13,6 +14,8 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub
 
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
+
+        public FinanceDataProviders Provider => FinanceDataProviders.Finnhub;
 
         public FinanceDataProvider(string token)
         {

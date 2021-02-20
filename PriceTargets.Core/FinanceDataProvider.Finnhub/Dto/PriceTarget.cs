@@ -15,12 +15,10 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub.Dto
         {
             var model = new Models.FinanceDataProvider.PriceTarget()
             {
-                Ticker = symbol,
                 TargetHigh = targetHigh,
                 TargetLow = targetLow,
                 TargetMean = targetMean,
                 TargetMedian = targetMedian,
-
             };
 
             if (DateTime.TryParse(lastUpdated, out var datetime))

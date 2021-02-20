@@ -126,7 +126,7 @@ namespace PriceTargets.Core.StockMarket.Tinkoff
             Output.Publish("Done");
         }
 
-        public async Task<string[]> GetTickers()
+        public async Task<string[]> GetTickersAsync()
         {
             var stocks = await Context.MarketStocksAsync();
 
