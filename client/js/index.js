@@ -16,19 +16,11 @@ const fields = [{
     }, {
         name: 'TargetPriceHigh'
     }, {
-        name: 'TargetPriceHighPercent'
-    }, {
         name: 'TargetPriceMean'
-    }, {
-        name: 'TargetPriceMeanPercent'
     }, {
         name: 'TargetPriceMedian'
     }, {
-        name: 'TargetPriceMedianPercent'
-    }, {
         name: 'TargetPriceLow'
-    }, {
-        name: 'TargetPriceLowPercent'
     }, {
         name: 'StrongBuy'
     }, {
@@ -39,8 +31,6 @@ const fields = [{
         name: 'Sell'
     }, {
         name: 'StrongSell'
-    }, {
-        name: 'RecommendationTrend'
     },
 ];
 
@@ -141,7 +131,7 @@ function tableRender() {
 
     let val;
     let t;
-	let ind;
+    let ind;
 
     let c;
     let pricel;
@@ -174,31 +164,48 @@ function tableRender() {
 
             let row = sortedData[i];
             t = row['Ticker'];
-			ind = row['Industry'];
+            ind = row['Industry'];
             c = row['CurrentPrice'];
             pricel = row['TargetPriceLow'];
             pricemean = row['TargetPriceMean'];
             pricemedian = row['TargetPriceMedian'];
             pricem = (pricemean + pricemedian) / 2;
             priceh = row['TargetPriceHigh'];
-            percentl = row['TargetPriceLowPercent'];
-            percentmean = row['TargetPriceMeanPercent'];
-            percentmedian = row['TargetPriceMedianPercent'];
+
+            percentl = pricel / c * 100 - 100;
+            percentmean = pricemean / c * 100 - 100;
+            percentmedian = pricemedian / c * 100 - 100;
             percentm = (percentmean + percentmedian) / 2;
-            percenth = row['TargetPriceHighPercent'];
-            rt = row['RecommendationTrend'];
+            percenth = priceh / c * 100 - 100;
+
             strongBuy = row['StrongBuy'];
             buy = row['Buy'];
             hold = row['Hold'];
             sell = row['Sell'];
             strongSell = row['StrongSell'];
-            mychoice = row['MyChoice'];
+
+            let rtn = strongBuy + buy + hold + sell + strongSell;
+            if (rtn == 0) {
+                rt = 0;
+            } else {
+                rt = (strongBuy * 1 +
+                    buy * 2 +
+                    hold * 3 +
+                    sell * 4 +
+                    strongSell * 5) / rtn;
+            }
+
+            mychoice = getMyChoice(rt, pricel, priceh, percentmean, percentmedian);
 
             if (shortName === 't') {
                 val = `<a href='https://finance.yahoo.com/quote/${t}'>${t}</a>`;
             }
-			if (shortName === 'ind') {
-                val = ind;
+            if (shortName === 'ind') {
+                if (ind === null) {
+                    val = 'Unknown';
+                } else {
+                    val = ind;
+                }
             }
             if (shortName === 'c') {
                 val = c;
@@ -260,8 +267,9 @@ function sortByField({
 }, {
     [sortField]: b
 }) {
-    if (sortField === 'RecommendationTrend' ||
-        sortField === 'Ticker') {
+    if (sortField === 'Ticker' ||
+        sortField === 'Industry' ||
+        sortField === 'RecommendationTrend') {
         return compare(a, b);
     } else {
         return compare(b, a);
@@ -278,28 +286,13 @@ function addListeners() {
     });
 };
 
-function addMyChoiceColumn(stocksData) {
-    let row;
-    for (var i = 0; i < stocksData.length; i++) {
-        row = stocksData[i];
-        row.MyChoice = getMyChoice(row);
-    }
-}
+function getMyChoice(rt, pricel, priceh, percentmean, percentmedian) {
 
-function getMyChoice(row) {
-
-    let rt = row['RecommendationTrend'];
     if (rt === 0 || rt > 3)
         return 0;
 
-    let pricel = row['TargetPriceLow'];
-    let priceh = row['TargetPriceHigh'];
-
     if (pricel === priceh)
         return 0;
-
-    let percentmean = row['TargetPriceMeanPercent'];
-    let percentmedian = row['TargetPriceMedianPercent'];
 
     let percentm = (percentmean + percentmedian) / 2;
 
@@ -319,8 +312,6 @@ xmlhttp.onreadystatechange = function () {
         columnDescriptionsRender();
 
         const stocksData = [...data.Stocks];
-
-        addMyChoiceColumn(stocksData);
 
         zeros = stocksData.filter((item) => item.RecommendationTrend === 0);
         noneZeros = stocksData.filter((item) => item.RecommendationTrend !== 0);

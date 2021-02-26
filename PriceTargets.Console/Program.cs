@@ -88,23 +88,14 @@ namespace PriceTargets.ConsoleApp
                     var stockInfo = stockInfosFromCache.FirstOrDefault(x => x.Ticker == ticker);
                     if (stockInfo == null)
                     {
-
                         var companyInfo = await financeDataManager.GetCompanyInfoAsync(ticker);
-
-                        var priceExpectationLevel = measure.GetPriceExpectationsLevel(
-                            companyInfo.CurrentPrice,
-                            companyInfo.PriceTarget);
-
-                        var meanTrend = measure.GetTrendExpectationsLevel(companyInfo.RecommendationTrend);
 
                         stockInfo = StockInfo.Create(
                             ticker,
                             companyInfo.Industry,
                             companyInfo.CurrentPrice,
                             companyInfo.PriceTarget,
-                            priceExpectationLevel,
-                            companyInfo.RecommendationTrend,
-                            meanTrend);
+                            companyInfo.RecommendationTrend);
 
                         await stockInfoCache.SaveAsync(stockInfo);
                     }
@@ -155,8 +146,6 @@ namespace PriceTargets.ConsoleApp
             var token = await System.IO.File.ReadAllTextAsync(tokenFile);
             return token;
         }
-
-
 
         private static async Task<string> GetFinanceDataProviderToken(Core.Domain.FinanceDataProviders provider)
         {
@@ -210,9 +199,6 @@ namespace PriceTargets.ConsoleApp
 
             return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
         }
-
-
-
 
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
         {
