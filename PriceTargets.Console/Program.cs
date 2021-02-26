@@ -4,13 +4,45 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PriceTargets.Core.Domain;
 using PriceTargets.Core.Models;
-
+using NDesk.Options;
 
 namespace PriceTargets.ConsoleApp
 {
     class Program
     {
         static async Task Main(string[] args)
+        {
+            var tickersLimit = -1;
+            var showHelp = false;
+
+            var p = new OptionSet() {
+                { "h|?|help",  v => { showHelp = v != null; } },
+                { "l|limit=",   v => { int.TryParse(v, out tickersLimit); } },
+            };
+
+            List<string> extra;
+            try
+            {
+                extra = p.Parse(args);
+            }
+            catch (OptionException e)
+            {
+                Console.Write("greet: ");
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try `greet --help' for more information.");
+                return;
+            }
+
+            if (showHelp)
+            {
+                ShowHelp(p);
+                return;
+            }
+
+            await Run(tickersLimit);
+        }
+
+        static async Task Run (int tickersLimit)
         {
             var output = GetOutput();
 
@@ -34,8 +66,19 @@ namespace PriceTargets.ConsoleApp
 
             var stockInfosFromCache = await stockInfoCache.GetAllAsync();
 
-            for (int i = 0; i< n; i++)
+            if (tickersLimit > 0)
             {
+                output.Publish($"tickers limit = {tickersLimit}");
+            }
+
+            var tryCount = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (i == tickersLimit)
+                {
+                    break;
+                }
+
                 var ticker = tickers[i];
 
                 output.Publish($"{ticker} {i}/{n}");
@@ -68,10 +111,17 @@ namespace PriceTargets.ConsoleApp
                 }
                 catch (System.Net.Http.HttpRequestException ex)
                 {
+                    if (tryCount > 3)
+                    {
+                        return;
+                    }
+
                     output.Publish($"{ticker} {i}/{n} else one try");
                     await Task.Delay(2000);
                     i--;
+                    tryCount++;
                 }
+                tryCount = 0;
             }
 
             var report = publisher.CreateReport(stockInfos.ToArray());
@@ -80,6 +130,16 @@ namespace PriceTargets.ConsoleApp
             await stockInfoCache.ClearAsync();
 
             output.Publish($"report saved");
+        }
+
+        static void ShowHelp(OptionSet p)
+        {
+            Console.WriteLine("Usage: greet [OPTIONS]+ message");
+            Console.WriteLine("Greet a list of individuals with an optional message.");
+            Console.WriteLine("If no message is specified, a generic greeting is used.");
+            Console.WriteLine();
+            Console.WriteLine("Options:");
+            p.WriteOptionDescriptions(Console.Out);
         }
 
         private static async Task<string> GetStockMarketTokenAsync()
@@ -94,6 +154,8 @@ namespace PriceTargets.ConsoleApp
             var token = await System.IO.File.ReadAllTextAsync(tokenFile);
             return token;
         }
+
+
 
         private static async Task<string> GetFinanceDataProviderToken(Core.Domain.FinanceDataProviders provider)
         {
@@ -148,7 +210,7 @@ namespace PriceTargets.ConsoleApp
             return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
         }
 
-       
+
 
 
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
