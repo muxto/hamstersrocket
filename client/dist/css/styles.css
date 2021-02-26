@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-family: sans-serif;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #CCC;
+  white-space: nowrap;
+  padding: 8px;
+}
+
+button {
+  width: 100%;
+}
+
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+div {
+  margin-bottom: 15px;
+}

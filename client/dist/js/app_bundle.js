@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var xmlhttp = new XMLHttpRequest();
 var url = "report.json";
