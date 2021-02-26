@@ -30,15 +30,16 @@ namespace PriceTargets.Core.FinanceDataManager.Main
                 .FirstOrDefault() ?? new Core.Models.FinanceDataProvider.RecommendationTrend();
 
             var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
+            var industry = await tipranks.GetIndustryAsync(ticker);
             //await Task.Delay(1000);
 
             var companyInfo = new CompanyInfo()
             {
                 Ticker = ticker,
-                Industry = "",
+                Industry = industry,
                 CurrentPrice = currentPrice,
                 PriceTarget = targetPrice,
-                RecommendationTrend = recommendationTrend
+                RecommendationTrend = recommendationTrend,
             };
 
             return companyInfo;

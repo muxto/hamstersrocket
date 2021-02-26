@@ -11,5 +11,7 @@ namespace PriceTargets.Core.Domain
         Task<Models.FinanceDataProvider.CurrentPrice> GetCurrentPriceAsync(string ticker);
 
         Task<Models.FinanceDataProvider.RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker);
+
+        Task<string> GetIndustryAsync(string ticker);
     }
 }

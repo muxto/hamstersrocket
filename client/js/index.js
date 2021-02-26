@@ -10,6 +10,8 @@ let noneZeros;
 const fields = [{
         name: 'Ticker'
     }, {
+        name: 'Industry'
+    }, {
         name: 'CurrentPrice'
     }, {
         name: 'TargetPriceHigh'
@@ -48,6 +50,12 @@ const viewFields = [{
         shortName: 't',
         sortField: 'Ticker',
         sortFieldCaption: 'Ticker'
+    }, {
+        caption: 'Industry',
+        description: 'Industry',
+        shortName: 'ind',
+        sortField: 'Industry',
+        sortFieldCaption: 'Industry'
     }, {
         caption: 'Current price',
         description: 'Stock current price',
@@ -133,6 +141,7 @@ function tableRender() {
 
     let val;
     let t;
+	let ind;
 
     let c;
     let pricel;
@@ -165,6 +174,7 @@ function tableRender() {
 
             let row = sortedData[i];
             t = row['Ticker'];
+			ind = row['Industry'];
             c = row['CurrentPrice'];
             pricel = row['TargetPriceLow'];
             pricemean = row['TargetPriceMean'];
@@ -186,6 +196,9 @@ function tableRender() {
 
             if (shortName === 't') {
                 val = `<a href='https://finance.yahoo.com/quote/${t}'>${t}</a>`;
+            }
+			if (shortName === 'ind') {
+                val = ind;
             }
             if (shortName === 'c') {
                 val = c;
