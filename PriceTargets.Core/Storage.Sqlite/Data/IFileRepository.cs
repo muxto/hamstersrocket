@@ -1,6 +1,8 @@
-﻿using veeshnum.Database.Sqlite.Model;
+﻿
 
-namespace veeshnum.Database.Sqlite.Data
+using HamstersRocket.Core.Storage.Sqlite.Model;
+
+namespace HamstersRocket.Core.Storage.Sqlite.Data
 {
     public interface IFileRepository
     {
@@ -10,9 +12,9 @@ namespace veeshnum.Database.Sqlite.Data
         FileEntry GetFile(string[] tags);
 
         void AddTags(long id, string[] tags);
-     //  void DeleteTag(long id, params string[] tags);
-     //  void DeleteTag(long id);
-     //  string [] GetAllTags(long id, params string[] tags);
+        //  void DeleteTag(long id, params string[] tags);
+        //  void DeleteTag(long id);
+        //  string [] GetAllTags(long id, params string[] tags);
 
     }
 }

@@ -1,6 +1,6 @@
-﻿using PriceTargets.Core.Domain;
+﻿using HamstersRocket.Contracts.Domain;
 
-namespace PriceTargets.Core.Output.Console
+namespace HamstersRocket.Core.Output.Console
 {
     public class Output : IOutput
     {

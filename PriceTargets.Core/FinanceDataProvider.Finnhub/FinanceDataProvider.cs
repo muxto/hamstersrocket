@@ -1,11 +1,11 @@
-﻿using PriceTargets.Core.Models.FinanceDataProvider;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
 using System.Linq;
-using PriceTargets.Core.Domain;
+using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataProvider;
 
-namespace PriceTargets.Core.FinanceDataProvider.Finnhub
+namespace HamstersRocket.Contracts.FinanceDataProvider.Finnhub
 {
     public class FinanceDataProvider : Domain.IFinanceDataProvider
     {
@@ -45,14 +45,14 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
             var query = $"{_baseUrl}/stock/price-target?symbol={ticker}&token={_token}";
-            var model = await GetJson<Dto.PriceTarget>(query);
+            var model = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.PriceTarget>(query);
             return model.ToDomain();
         }
 
         public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
         {
             var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={_token}";
-            var models = await GetJson<Dto.RecommendationTrend[]>(query);
+            var models = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.RecommendationTrend[]>(query);
             return models.Select(x => x.ToDomain()).ToArray();
         }
 

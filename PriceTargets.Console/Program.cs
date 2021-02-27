@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PriceTargets.Core.Domain;
-using PriceTargets.Core.Models;
 using NDesk.Options;
+using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models;
 
-namespace PriceTargets.ConsoleApp
+namespace HamstersRocket.ConsoleApp
 {
     class Program
     {
@@ -47,6 +47,11 @@ namespace PriceTargets.ConsoleApp
             var output = GetOutput();
 
             var stockMarketToken = await GetStockMarketTokenAsync();
+            if (stockMarketToken == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             var stockMarket = GetStockMarket(stockMarketToken, output);
 
             var storage = GetStorage();
@@ -54,7 +59,6 @@ namespace PriceTargets.ConsoleApp
             var financeDataProviders = await GetFinanceDataProvidersAsync();
             var financeDataManager = GetFinanceDataManager(financeDataProviders);
 
-            var measure = GetMeasure();
             var publisher = GetPublisher();
             var stockInfoCache = GetStockInfoCache();
 
@@ -147,7 +151,7 @@ namespace PriceTargets.ConsoleApp
             return token;
         }
 
-        private static async Task<string> GetFinanceDataProviderToken(Core.Domain.FinanceDataProviders provider)
+        private static async Task<string> GetFinanceDataProviderToken(Contracts.Domain.FinanceDataProviders provider)
         {
             if (provider == FinanceDataProviders.Finnhub)
             {
@@ -184,15 +188,20 @@ namespace PriceTargets.ConsoleApp
         {
             return providerName switch
             {
-                FinanceDataProviders.Finnhub => new Core.FinanceDataProvider.Finnhub.FinanceDataProvider(token),
-                FinanceDataProviders.TipRanks => new Core.FinanceDataProvider.TipRanks.FinanceDataProvider(),
+                FinanceDataProviders.Finnhub => new Contracts.FinanceDataProvider.Finnhub.FinanceDataProvider(token),
+                FinanceDataProviders.TipRanks => new Contracts.FinanceDataProvider.TipRanks.FinanceDataProvider(),
                 _ => throw new NotSupportedException(),
             };
         }
 
         private static async Task<IFinanceDataProvider[]> GetFinanceDataProvidersAsync()
         {
-            var financeDataProviderToken = await GetFinanceDataProviderToken(Core.Domain.FinanceDataProviders.Finnhub);
+            var financeDataProviderToken = await GetFinanceDataProviderToken(FinanceDataProviders.Finnhub);
+            if (financeDataProviderToken == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             var financeDataProviderFinnhub = GetFinanceDataProvider(FinanceDataProviders.Finnhub, financeDataProviderToken);
 
             var financeDataProviderTipRanks = GetFinanceDataProvider(FinanceDataProviders.TipRanks, null);
@@ -200,24 +209,22 @@ namespace PriceTargets.ConsoleApp
             return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
         }
 
+
+
+
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
         {
-            return new Core.FinanceDataManager.Main.FinanceDataManager(providers);
-        }
-
-        private static IMeasure GetMeasure()
-        {
-            return new PriceTargets.Core.Measure.Calculator.Measure();
+            return new Contracts.FinanceDataManager.Main.FinanceDataManager(providers);
         }
 
         private static IPublisher GetPublisher()
         {
-            return new PriceTargets.Core.Publisher.Json.Publisher();
+            return new HamstersRocket.Core.Publisher.Json.Publisher();
         }
 
         private static IStockInfoCache GetStockInfoCache()
         {
-            return new PriceTargets.Core.Cache.File.StockInfoCache();
+            return new HamstersRocket.Core.StockInfoCache.File.StockInfoCache();
         }
     }
 }

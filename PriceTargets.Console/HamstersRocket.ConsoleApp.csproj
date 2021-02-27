@@ -10,7 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PriceTargets.Core\PriceTargets.Core.csproj" />
+    <ProjectReference Include="..\HamstersRocket.Contracts\HamstersRocket.Contracts.csproj" />
+    <ProjectReference Include="..\PriceTargets.Core\HamstersRocket.Core.csproj" />
   </ItemGroup>
 
 </Project>

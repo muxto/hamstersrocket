@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
-using PriceTargets.Core.Domain;
-using PriceTargets.Core.Models.FinanceDataProvider;
+using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataProvider;
+using HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto;
 
-
-namespace PriceTargets.Core.FinanceDataProvider.TipRanks
+namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
 {
     public class FinanceDataProvider : Domain.IFinanceDataProvider
     {
@@ -17,7 +17,7 @@ namespace PriceTargets.Core.FinanceDataProvider.TipRanks
 
         public FinanceDataProviders Provider => FinanceDataProviders.TipRanks;
 
-        private Dto.Data lastData;
+        private Data lastData;
 
         public FinanceDataProvider()
         {
@@ -40,12 +40,12 @@ namespace PriceTargets.Core.FinanceDataProvider.TipRanks
             return model;
         }
 
-        private async Task<Dto.Data> GetData(string ticker)
+        private async Task<Data> GetData(string ticker)
         {
             if (lastData == null || lastData.Ticker != ticker)
             {
                 var query = $"{_baseUrl}/getData/?name={ticker}";
-                lastData = await GetJson<Dto.Data>(query);
+                lastData = await GetJson<Data>(query);
             }
             return lastData;
         }

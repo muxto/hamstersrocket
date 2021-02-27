@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PriceTargets.Core.Models.Publisher
+namespace HamstersRocket.Contracts.Models.Publisher
 {
     public class Report
     {

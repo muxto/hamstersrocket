@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PriceTargets.Core.Models.FinanceDataProvider
+namespace HamstersRocket.Contracts.Models.FinanceDataProvider
 {
     public class PriceTarget
     {

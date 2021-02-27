@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace veeshnum.Database.Sqlite.Model
+namespace HamstersRocket.Core.Storage.Sqlite.Model
 {
     public class FileEntry
     {

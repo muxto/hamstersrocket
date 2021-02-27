@@ -1,7 +1,7 @@
-﻿using PriceTargets.Core.Models;
-using PriceTargets.Core.Models.Publisher;
+﻿using HamstersRocket.Contracts.Models;
+using HamstersRocket.Contracts.Models.Publisher;
 
-namespace PriceTargets.Core.Domain
+namespace HamstersRocket.Contracts.Domain
 {
     public interface IPublisher
     {

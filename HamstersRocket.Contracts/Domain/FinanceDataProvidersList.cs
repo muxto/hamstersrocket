@@ -1,4 +1,4 @@
-﻿namespace PriceTargets.Core.Domain
+﻿namespace HamstersRocket.Contracts.Domain
 {
     public enum FinanceDataProviders
     {

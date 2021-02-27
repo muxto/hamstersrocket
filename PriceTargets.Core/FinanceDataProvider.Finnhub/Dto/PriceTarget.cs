@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PriceTargets.Core.FinanceDataProvider.Finnhub.Dto
+namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
 {
     public class PriceTarget
     {
@@ -11,9 +11,9 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub.Dto
         public decimal targetMedian { get; set; }
         public string lastUpdated { get; set; }
 
-        public Models.FinanceDataProvider.PriceTarget ToDomain()
+        public Contracts.Models.FinanceDataProvider.PriceTarget ToDomain()
         {
-            var model = new Models.FinanceDataProvider.PriceTarget()
+            var model = new Contracts.Models.FinanceDataProvider.PriceTarget()
             {
                 TargetHigh = targetHigh,
                 TargetLow = targetLow,

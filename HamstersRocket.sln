@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PriceTargets.Core", "PriceTargets.Core\PriceTargets.Core.csproj", "{BBD22AF8-66E2-44FB-BA29-D8525033E874}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamstersRocket.Core", "PriceTargets.Core\HamstersRocket.Core.csproj", "{BBD22AF8-66E2-44FB-BA29-D8525033E874}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PriceTargets.ConsoleApp", "PriceTargets.Console\PriceTargets.ConsoleApp.csproj", "{20554277-7FB0-47DC-9DF0-FB5FF708D52D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HamstersRocket.ConsoleApp", "PriceTargets.Console\HamstersRocket.ConsoleApp.csproj", "{20554277-7FB0-47DC-9DF0-FB5FF708D52D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HamstersRocket.Contracts", "HamstersRocket.Contracts\HamstersRocket.Contracts.csproj", "{B07AE433-2ADB-4E3B-9032-014C732C3C2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{20554277-7FB0-47DC-9DF0-FB5FF708D52D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20554277-7FB0-47DC-9DF0-FB5FF708D52D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20554277-7FB0-47DC-9DF0-FB5FF708D52D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07AE433-2ADB-4E3B-9032-014C732C3C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07AE433-2ADB-4E3B-9032-014C732C3C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07AE433-2ADB-4E3B-9032-014C732C3C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07AE433-2ADB-4E3B-9032-014C732C3C2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

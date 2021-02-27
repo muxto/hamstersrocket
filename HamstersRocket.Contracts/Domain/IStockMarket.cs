@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace PriceTargets.Core.Domain
+namespace HamstersRocket.Contracts.Domain
 {
     public interface IStockMarket
     {

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataProvider;
+using System;
 using System.Threading.Tasks;
-using PriceTargets.Core.Domain;
-using PriceTargets.Core.Models.FinanceDataProvider;
 
-namespace PriceTargets.Core.Storage.File
+namespace HamstersRocket.Core.Storage.File
 {
     public class StorageFile : IStorage
     {

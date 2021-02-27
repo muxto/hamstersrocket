@@ -1,10 +1,10 @@
 ﻿using Dapper;
+using HamstersRocket.Core.Storage.Sqlite.Model;
 using Microsoft.Data.Sqlite;
 using System.IO;
 using System.Linq;
-using veeshnum.Database.Sqlite.Model;
 
-namespace veeshnum.Database.Sqlite.Data
+namespace HamstersRocket.Core.Storage.Sqlite.Data
 {
     public class FileRepository : IFileRepository
     {
@@ -12,7 +12,7 @@ namespace veeshnum.Database.Sqlite.Data
 
         private string DbFile;
 
-       // private Logger logger;
+        // private Logger logger;
 
         public FileRepository(string path)
         {
@@ -27,7 +27,7 @@ namespace veeshnum.Database.Sqlite.Data
 
         private void CreateDatabase()
         {
-    //        logger.AddInfo("Create database " + DATABASE_NAME);
+            //        logger.AddInfo("Create database " + DATABASE_NAME);
 
             using (var cnn = SimpleDbConnection())
             {
@@ -52,13 +52,13 @@ namespace veeshnum.Database.Sqlite.Data
                         DateCreation             DEFAULT CURRENT_TIMESTAMP
                      );");
 
-  //              logger.AddInfo("Database created");
+                //              logger.AddInfo("Database created");
             }
         }
 
         public long SaveFile(string source)
         {
-            if (!File.Exists(DbFile))
+            if (!System.IO.File.Exists(DbFile))
             {
                 CreateDatabase();
             }
@@ -75,7 +75,7 @@ namespace veeshnum.Database.Sqlite.Data
                     ( @Source );
                     select last_insert_rowid()", param).First();
 
-         //       logger.AddInfo($"File {source} added to database");
+                //       logger.AddInfo($"File {source} added to database");
 
                 return id;
             }
@@ -83,9 +83,9 @@ namespace veeshnum.Database.Sqlite.Data
 
         public void AddTags(long id, string[] tags)
         {
-            if (!File.Exists(DbFile))
+            if (!System.IO.File.Exists(DbFile))
             {
-   //             logger.AddInfo($"Has no database");
+                //             logger.AddInfo($"Has no database");
                 return;
             }
 
@@ -114,20 +114,20 @@ namespace veeshnum.Database.Sqlite.Data
                 sqLiteTransaction.Commit();
                 if (lines > 0)
                 {
-     //               logger.AddInfo($"File {id} added {tags.Length} tags to database");
+                    //               logger.AddInfo($"File {id} added {tags.Length} tags to database");
                 }
                 else
                 {
-      //              logger.AddInfo($"No processed rows");
+                    //              logger.AddInfo($"No processed rows");
                 }
             }
         }
 
         public FileEntry GetFile(string[] tags)
         {
-            if (!File.Exists(DbFile))
+            if (!System.IO.File.Exists(DbFile))
             {
-    //            logger.AddInfo($"Has no database");
+                //            logger.AddInfo($"Has no database");
                 return null;
             }
 
@@ -140,7 +140,7 @@ namespace veeshnum.Database.Sqlite.Data
                 var results = cnn.Query<long>(
                     @"SELECT * FROM Tags WHERE Tag IN @tags", tags);
 
-              //  logger.AddInfo($"File {source} added to database");
+                //  logger.AddInfo($"File {source} added to database");
 
                 return null;
             }

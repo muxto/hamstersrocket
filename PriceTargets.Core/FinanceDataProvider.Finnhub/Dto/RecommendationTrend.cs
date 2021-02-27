@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PriceTargets.Core.FinanceDataProvider.Finnhub.Dto
+namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
 {
     public class RecommendationTrend
     {
@@ -12,14 +12,14 @@ namespace PriceTargets.Core.FinanceDataProvider.Finnhub.Dto
         public int strongSell { get; set; }
         public string period { get; set; }
 
-        public Models.FinanceDataProvider.RecommendationTrend ToDomain()
+        public Contracts.Models.FinanceDataProvider.RecommendationTrend ToDomain()
         {
-            var model = new Models.FinanceDataProvider.RecommendationTrend()
+            var model = new Contracts.Models.FinanceDataProvider.RecommendationTrend()
             {
                 Ticker = symbol,
                 StrongBuy = strongBuy,
                 Buy = buy,
-                Hold= hold,
+                Hold = hold,
                 Sell = sell,
                 StrongSell = strongSell,
             };

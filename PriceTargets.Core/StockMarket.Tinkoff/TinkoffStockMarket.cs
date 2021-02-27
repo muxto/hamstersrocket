@@ -1,4 +1,4 @@
-﻿using PriceTargets.Core.Domain;
+﻿using HamstersRocket.Contracts.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Tinkoff.Trading.OpenApi.Models;
 using Tinkoff.Trading.OpenApi.Network;
 
-namespace PriceTargets.Core.StockMarket.Tinkoff
+namespace HamstersRocket.Core.StockMarket.Tinkoff
 {
     public class TinkoffStockMarket : IStockMarket
     {

@@ -1,9 +1,9 @@
-﻿using PriceTargets.Core.Models.FinanceDataManager;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataManager;
 using System.Linq;
 using System.Threading.Tasks;
-using PriceTargets.Core.Domain;
 
-namespace PriceTargets.Core.FinanceDataManager.Main
+namespace HamstersRocket.Contracts.FinanceDataManager.Main
 {
     public class FinanceDataManager : IFinanceDataManager
     {
@@ -27,7 +27,7 @@ namespace PriceTargets.Core.FinanceDataManager.Main
 
             var recommendationTrend = recommendationTrends
                 .OrderBy(x => x.Period)
-                .FirstOrDefault() ?? new Core.Models.FinanceDataProvider.RecommendationTrend();
+                .FirstOrDefault() ?? new Contracts.Models.FinanceDataProvider.RecommendationTrend();
 
             var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
             var industry = await tipranks.GetIndustryAsync(ticker);

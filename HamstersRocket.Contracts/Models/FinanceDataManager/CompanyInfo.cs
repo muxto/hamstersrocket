@@ -1,4 +1,4 @@
-﻿namespace PriceTargets.Core.Models.FinanceDataManager
+﻿namespace HamstersRocket.Contracts.Models.FinanceDataManager
 {
     public class CompanyInfo
     {
@@ -6,6 +6,6 @@
         public string Industry { get; set; }
         public Models.FinanceDataProvider.CurrentPrice CurrentPrice { get; set; }
         public Models.FinanceDataProvider.PriceTarget PriceTarget { get; set; }
-        public Models.FinanceDataProvider.RecommendationTrend RecommendationTrend{ get; set; }
+        public Models.FinanceDataProvider.RecommendationTrend RecommendationTrend { get; set; }
     }
 }

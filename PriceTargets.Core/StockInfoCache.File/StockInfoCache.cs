@@ -1,24 +1,25 @@
-﻿using PriceTargets.Core.Models;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PriceTargets.Core.Cache.File
+namespace HamstersRocket.Core.StockInfoCache.File
 {
-    public class StockInfoCache : Domain.IStockInfoCache
+    public class StockInfoCache : IStockInfoCache
     {
         private const string CACHE_FILE = "cache";
 
-        private string Serialize(Models.StockInfo value)
+        private string Serialize(StockInfo value)
         {
             return JsonSerializer.Serialize(value);
         }
 
-        private Models.StockInfo Deserialize(string value)
+        private StockInfo Deserialize(string value)
         {
-            return JsonSerializer.Deserialize<Models.StockInfo>(value);
+            return JsonSerializer.Deserialize<StockInfo>(value);
         }
 
         public async Task<StockInfo[]> GetAllAsync()

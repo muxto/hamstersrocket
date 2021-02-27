@@ -1,6 +1,6 @@
-﻿using PriceTargets.Core.Models.FinanceDataProvider;
+﻿using HamstersRocket.Contracts.Models.FinanceDataProvider;
 
-namespace PriceTargets.Core.Models
+namespace HamstersRocket.Contracts.Models
 {
     public class StockInfo
     {

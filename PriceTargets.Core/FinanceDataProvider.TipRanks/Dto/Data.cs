@@ -1,4 +1,6 @@
-﻿namespace PriceTargets.Core.FinanceDataProvider.TipRanks.Dto
+﻿using HamstersRocket.Contracts.Models.FinanceDataProvider;
+
+namespace HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto
 {
     public class Data
     {
@@ -14,9 +16,9 @@
         public decimal? High { get; set; }
         public decimal? Low { get; set; }
 
-        public Models.FinanceDataProvider.PriceTarget ToDomain()
+        public PriceTarget ToDomain()
         {
-            var model = new Models.FinanceDataProvider.PriceTarget()
+            var model = new PriceTarget()
             {
                 TargetHigh = High ?? default,
                 TargetLow = Low ?? default,

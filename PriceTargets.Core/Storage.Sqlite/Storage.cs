@@ -1,14 +1,15 @@
-﻿using PriceTargets.Core.Models.FinanceDataProvider;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using System;
 using System.Threading.Tasks;
 
-namespace PriceTargets.Core.Storage.Sqlite
+namespace HamstersRocket.Core.Storage.Sqlite
 {
-    public class Storage : Domain.IStorage
+    public class Storage : IStorage
     {
         public Storage(string path)
         {
-          
+
         }
 
         public Task SaveCurrentPriceAsync(string ticker, CurrentPrice currentPrice)

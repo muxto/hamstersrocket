@@ -10,4 +10,8 @@
     <PackageReference Include="Tinkoff.Trading.OpenApi" Version="1.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HamstersRocket.Contracts\HamstersRocket.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

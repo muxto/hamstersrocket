@@ -1,11 +1,12 @@
-﻿using PriceTargets.Core.Models;
-using PriceTargets.Core.Models.Publisher;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models;
+using HamstersRocket.Contracts.Models.Publisher;
 using System;
 using System.Text.Json;
 
-namespace PriceTargets.Core.Publisher.Json
+namespace HamstersRocket.Core.Publisher.Json
 {
-    public class Publisher : Domain.IPublisher
+    public class Publisher : IPublisher
     {
         public Report CreateReport(StockInfo[] stocks)
         {
