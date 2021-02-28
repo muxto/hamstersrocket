@@ -6,53 +6,54 @@ let sortField = 'mychoice';
 let rawData;
 let stocksData;
 let model;
+let viewModel;
 
 const viewFields = [{
-        name: 'ticker',
         caption: 'Ticker',
         description: 'Ticker',
-        sortField: 't',
+        valueField: 'tickerLink',
+        sortField: 'ticker',
         sortFieldCaption: 'Ticker'
     }, {
-        name: 'industry',
         caption: 'Industry',
         description: 'Industry',
-        sortField: 'ind',
+        valueField: 'industry',
+        sortField: 'industry',
         sortFieldCaption: 'Industry'
     }, {
-        name: 'currentPrice',
         caption: 'Current price',
         description: 'Stock current price',
-        sortField: 'c',
+        valueField: 'currentPrice',
+        sortField: 'currentPrice',
         sortFieldCaption: 'Current price'
     }, {
-        name: 'targetPrices',
         caption: 'Target prices',
         description: 'Low - median -  high',
+        valueField: 'targetPrices',
         sortField: 'priceh',
         sortFieldCaption: 'High target price'
     }, {
-        name: 'targetPercent',
         caption: 'Percent to current price',
         description: 'Low - median -  high',
+        valueField: 'targetPercents',
         sortField: 'percenth',
         sortFieldCaption: 'High percent'
     }, {
-        name: 'rs',
         caption: 'Recommendations',
         description: 'Count of StrongBuy, Buy, Hold, Sell and StrongSell recomendations',
+        valueField: 'rs',
         sortField: 'strongBuy',
         sortFieldCaption: 'Strong buy'
     }, {
-        name: 'rt',
         caption: 'Recommendation trend',
         description: 'Mean value of StrongBuy(1), Buy(2), Hold(3), Sell(4) and StrongSell(5)',
+        valueField: 'rt',
         sortField: 'rt',
         sortFieldCaption: 'Recommendation trend'
     }, {
-        name: 'mychoice',
         caption: 'My choice',
         description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
+        valueField: 'mychoice',
         sortField: 'mychoice',
         sortFieldCaption: 'My choice percent'
     },
@@ -71,7 +72,7 @@ xmlhttp.onreadystatechange = function () {
         columnDescriptionsRender();
 
         model = getModel();
-
+        viewModel = getViewModel();
         tableRender();
     }
 };
@@ -112,11 +113,19 @@ function getModel() {
         rowModel.pricem = (rowModel.pricemean + rowModel.pricemedian) / 2;
         rowModel.priceh = row['TargetPriceHigh'];
 
-        rowModel.percentl = rowModel.pricel / rowModel.c * 100 - 100;
-        rowModel.percentmean = rowModel.pricemean / rowModel.c * 100 - 100;
-        rowModel.percentmedian = rowModel.pricemedian / rowModel.c * 100 - 100;
-        rowModel.percentm = (rowModel.percentmean + rowModel.percentmedian) / 2;
-        rowModel.percenth = rowModel.priceh / rowModel.c * 100 - 100;
+        if (rowModel.c == 0) {
+            rowModel.percentl = 0;
+            rowModel.percentmean = 0;
+            rowModel.percentmedian = 0;
+            rowModel.percentm = 0;
+            rowModel.percenth = 0;
+        } else {
+            rowModel.percentl = rowModel.pricel / rowModel.c * 100 - 100;
+            rowModel.percentmean = rowModel.pricemean / rowModel.c * 100 - 100;
+            rowModel.percentmedian = rowModel.pricemedian / rowModel.c * 100 - 100;
+            rowModel.percentm = (rowModel.percentmean + rowModel.percentmedian) / 2;
+            rowModel.percenth = rowModel.priceh / rowModel.c * 100 - 100;
+        }
 
         rowModel.strongBuy = row['StrongBuy'];
         rowModel.buy = row['Buy'];
@@ -149,29 +158,87 @@ function getModel() {
         model.push(rowModel);
     }
     return model;
+
+    function getMyChoice(rt, pricel, priceh, percentmean, percentmedian) {
+
+        if (rt === 0 || rt > 3)
+            return 0;
+
+        if (pricel === priceh)
+            return 0;
+
+        let percentm = (percentmean + percentmedian) / 2;
+
+        if (percentm < 110)
+            return 0;
+
+        let c = percentm * 0.9;
+
+        return c;
+    }
 }
 
-function getMyChoice(rt, pricel, priceh, percentmean, percentmedian) {
+function getViewModel() {
 
-    if (rt === 0 || rt > 3)
-        return 0;
+    viewModel = [];
 
-    if (pricel === priceh)
-        return 0;
+    for (var i = 0; i < model.length; i++) {
+        let row = model[i];
 
-    let percentm = (percentmean + percentmedian) / 2;
+        let rowViewModel = {};
 
-    if (percentm < 110)
-        return 0;
+        rowViewModel.tickerLink = `<a href='https://finance.yahoo.com/quote/${row.t}'>${row.t}</a>`;
+        rowViewModel.ticker = row.t;
 
-    let c = percentm * 0.9;
+        rowViewModel.industry = row.ind === null ? '' : row.ind;
 
-    return c;
+        rowViewModel.currentPrice = row.c == 0 ? '' : row.c;
+
+        if (row.c == 0 || row.pricel == 0) {
+            rowViewModel.targetPrices = '';
+            rowViewModel.priceh = '';
+            rowViewModel.targetPercents = '';
+            rowViewModel.percenth = '';
+            rowViewModel.rs = '';
+            rowViewModel.strongBuy = '';
+            rowViewModel.rt = '';
+            rowViewModel.mychoice = '';
+        } else {
+
+            rowViewModel.targetPrices = row.pricel;
+            if (row.pricel !== row.priceh) {
+                rowViewModel.targetPrices += ` - ${row.pricem.toFixed(2)} - ${row.priceh}`;
+            }
+            rowViewModel.priceh = row.priceh;
+
+            rowViewModel.targetPercents = row.percentl.toFixed(2);
+            if (row.percentl !== row.percenth) {
+                rowViewModel.targetPercents += ` - ${row.percentm.toFixed(2)} - ${row.percenth.toFixed(2)}`;
+            }
+            rowViewModel.targetPercents = `x ${rowViewModel.targetPercents} %`;
+            rowViewModel.percenth = row.percenth;
+
+            rowViewModel.rs = `${row.strongBuy}, ${row.buy}, ${row.hold}, ${row.sell}, ${row.strongSell}`;
+            rowViewModel.strongBuy = row.strongBuy;
+
+            rowViewModel.rt = `${row.rt.toFixed(2)}`;
+
+            if (row.mychoice === 0) {
+                rowViewModel.mychoice = '';
+            } else {
+                let p1 = row.pricem * 0.9;
+                let p2 = row.percentm * 0.9;
+                rowViewModel.mychoice = `${p1.toFixed(2)} x ${p2.toFixed(2)} %`;
+            }
+        }
+        viewModel.push(rowViewModel);
+    }
+    return viewModel;
 }
 
 function tableRender() {
 
-    model = model.sort(sortByField);
+    let sorted = sortByField();
 
     let tableString = '<table><tr>';
     viewFields.forEach(({
@@ -191,59 +258,16 @@ function tableRender() {
     });
     tableString += '</tr>';
 
-    for (var i = 0; i < model.length; i++) {
+    for (var i = 0; i < sorted.length; i++) {
         tableString += '<tr>';
 
         viewFields.forEach(({
-                name
+                valueField
             }) => {
 
-            let row = model[i];
-            let val;
+            let row = sorted[i];
 
-            if (name === 'ticker') {
-                val = `<a href='https://finance.yahoo.com/quote/${row.t}'>${row.t}</a>`;
-            }
-            if (name === 'industry') {
-                if (row.ind === null) {
-                    val = '';
-                } else {
-                    val = row.ind;
-                }
-            }
-            if (name === 'currentPrice') {
-                val = row.c;
-            }
-            if (name === 'targetPrices') {
-                val = row.pricel;
-                if (row.pricel !== row.priceh) {
-                    val += ` - ${row.pricem.toFixed(2)} - ${row.priceh}`;
-                }
-            }
-            if (name === 'targetPercent') {
-                val = row.percentl.toFixed(2);
-                if (row.percentl !== row.percenth) {
-                    val += ` - ${row.percentm.toFixed(2)} - ${row.percenth.toFixed(2)}`;
-                }
-                val = `x ${val} %`;
-            }
-            if (name === 'rs') {
-                val = `${row.strongBuy}, ${row.buy}, ${row.hold}, ${row.sell}, ${row.strongSell}`;
-            }
-            if (name === 'rt') {
-                val = row.rt;
-            }
-            if (name === 'mychoice') {
-                if (row.mychoice === 0) {
-                    val = 0;
-                } else {
-                    let p1 = row.pricem * 0.9;
-                    let p2 = row.percentm * 0.9;
-                    val = `${p1.toFixed(2)} x ${p2.toFixed(2)} %`;
-                }
-            }
-
-            tableString += `<td>${val}</td>`;
+            tableString += `<td>${row[valueField]}</td>`;
         });
     }
 
@@ -256,6 +280,7 @@ function tableRender() {
 };
 
 function compare(a, b) {
+
     if (a > b) {
         return 1;
     }
@@ -266,13 +291,22 @@ function compare(a, b) {
     return 0;
 }
 
-function sortByField({
+function sortByField() {
+    let emptyRows = viewModel.filter((item) => item[sortField] === '');
+    let rows = viewModel.filter((item) => item[sortField] !== '');
+
+    rows = rows.sort(customSort);
+    return rows.concat(emptyRows);
+}
+
+function customSort({
     [sortField]: a
 }, {
     [sortField]: b
 }) {
-    if (sortField === 't' ||
-        sortField === 'ind' ||
+
+    if (sortField === 'ticker' ||
+        sortField === 'industry' ||
         sortField === 'rt') {
         return compare(a, b);
     } else {
