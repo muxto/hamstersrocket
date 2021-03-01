@@ -2,13 +2,19 @@
 
 var xmlhttp = new XMLHttpRequest();
 var url = "report.json";
-let sortField = 'mychoice';
+let sortField = 'mychoicePercent';
 let rawData;
 let stocksData;
 let model;
 let viewModel;
 
 const viewFields = [{
+        caption: 'Take Profit - my choice',
+        description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
+        valueField: 'mychoice',
+        sortField: 'mychoicePercent',
+        sortFieldCaption: 'My choice percent'
+    }, {
         caption: 'Ticker',
         description: 'Ticker',
         valueField: 'tickerLink',
@@ -50,12 +56,6 @@ const viewFields = [{
         valueField: 'rt',
         sortField: 'rt',
         sortFieldCaption: 'Recommendation trend'
-    }, {
-        caption: 'My choice',
-        description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
-        valueField: 'mychoice',
-        sortField: 'mychoice',
-        sortFieldCaption: 'My choice percent'
     },
 ];
 
@@ -164,12 +164,12 @@ function getModel() {
         if (rt === 0 || rt > 3)
             return 0;
 
-        if (pricel === priceh)
-            return 0;
+        //if (pricel === priceh)
+            //return 0;
 
         let percentm = (percentmean + percentmedian) / 2;
 
-        if (percentm < 110)
+        if (percentm < 10)
             return 0;
 
         let c = percentm * 0.9;
@@ -192,7 +192,7 @@ function getViewModel() {
 
         rowViewModel.industry = row.ind === null ? '' : row.ind;
 
-        rowViewModel.currentPrice = row.c == 0 ? '' : row.c;
+        rowViewModel.currentPrice = row.c == 0 ? '' : `${row.c.toFixed(2)}`;
 
         if (row.c == 0 || row.pricel == 0) {
             rowViewModel.targetPrices = '';
@@ -203,6 +203,7 @@ function getViewModel() {
             rowViewModel.strongBuy = '';
             rowViewModel.rt = '';
             rowViewModel.mychoice = '';
+            rowViewModel.mychoicePercent = '';
         } else {
 
             rowViewModel.targetPrices = row.pricel;
@@ -225,10 +226,11 @@ function getViewModel() {
 
             if (row.mychoice === 0) {
                 rowViewModel.mychoice = '';
+                rowViewModel.mychoicePercent = '';
             } else {
-                let p1 = row.pricem * 0.9;
-                let p2 = row.percentm * 0.9;
-                rowViewModel.mychoice = `${p1.toFixed(2)} x ${p2.toFixed(2)} %`;
+                let p = row.c + row.c * (row.mychoice / 100);
+                rowViewModel.mychoice = `${p.toFixed(2)} ( ${row.mychoice.toFixed(2)} %)`;
+                rowViewModel.mychoicePercent = row.mychoice;
             }
         }
         viewModel.push(rowViewModel);

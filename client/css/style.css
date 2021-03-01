@@ -11,6 +11,20 @@ table {
   border-collapse: collapse;
 }
 
+tr:nth-child(even) {
+	background: #CCC;
+}
+
+tr:nth-child(1) {
+    background: #666; /* Цвет фона */
+    color: #fff; /* Цвет текста */
+}
+
+tr:nth-child(2) {
+    background: #666; /* Цвет фона */
+    color: #fff; /* Цвет текста */
+} 
+
 th, td {
   border: 1px solid #CCC;
   white-space: nowrap;
