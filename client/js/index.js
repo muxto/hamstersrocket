@@ -9,6 +9,12 @@ let model;
 let viewModel;
 
 const viewFields = [{
+        caption: '#',
+        description: '',
+        valueField: 'num',
+        sortField: '',
+        sortFieldCaption: ''
+    }, {
         caption: 'Take Profit - my choice',
         description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
         valueField: 'mychoice',
@@ -87,7 +93,9 @@ function columnDescriptionsRender() {
             caption,
             description
         }) => {
-        text += `<strong>${caption}</strong> - ${description}<br>`
+        if (description !== '') {
+            text += `<strong>${caption}</strong> - ${description}<br>`
+        }
     });
 
     document.getElementById('columsDescription').innerHTML = text;
@@ -165,7 +173,7 @@ function getModel() {
             return 0;
 
         //if (pricel === priceh)
-            //return 0;
+        //return 0;
 
         let percentm = (percentmean + percentmedian) / 2;
 
@@ -187,7 +195,7 @@ function getViewModel() {
 
         let rowViewModel = {};
 
-        rowViewModel.tickerLink = `<a href='https://finance.yahoo.com/quote/${row.t}'>${row.t}</a>`;
+        rowViewModel.tickerLink = `<a target="_blank" href='https://finance.yahoo.com/quote/${row.t}'>${row.t}</a>`;
         rowViewModel.ticker = row.t;
 
         rowViewModel.industry = row.ind === null ? '' : row.ind;
@@ -256,12 +264,20 @@ function tableRender() {
             sortField,
             sortFieldCaption
         }) => {
-        tableString += `<td><button type="button" sort-field="${sortField}">Order by ${sortFieldCaption}</button></td>`;
+        tableString += "<td>";
+        if (sortField !== '') {
+            tableString += `<button type="button" sort-field="${sortField}">Order by ${sortFieldCaption}</button>`
+        }
+        tableString += "</td>";
+
     });
     tableString += '</tr>';
 
     for (var i = 0; i < sorted.length; i++) {
-        tableString += '<tr>';
+        
+		sorted[i].num = i+1;
+		
+		tableString += '<tr>';
 
         viewFields.forEach(({
                 valueField
