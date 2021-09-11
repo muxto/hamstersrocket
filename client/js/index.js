@@ -200,7 +200,7 @@ function getViewModel() {
 
         rowViewModel.industry = row.ind === null ? '' : row.ind;
 
-        rowViewModel.currentPrice = row.c == 0 ? '' : `${row.c.toFixed(2)}`;
+        rowViewModel.currentPrice = row.c == 0 ? '' : parseFloat(`${row.c.toFixed(2)}`);
 
         if (row.c == 0 || row.pricel == 0) {
             rowViewModel.targetPrices = '';
@@ -325,7 +325,8 @@ function customSort({
 
     if (sortField === 'ticker' ||
         sortField === 'industry' ||
-        sortField === 'rt') {
+        sortField === 'rt' ||
+		sortField === 'currentPrice') {
         return compare(a, b);
     } else {
         return compare(b, a);
