@@ -8,60 +8,91 @@ let stocksData;
 let model;
 let viewModel;
 
-const viewFields = [{
+const viewColumns = [{
+        id: 'num',
         caption: '#',
         description: '',
         valueField: 'num',
-        sortField: '',
-        sortFieldCaption: ''
     }, {
+        id: 'mychoice',
         caption: 'Take Profit - my choice',
         description: 'I would set take profit to 90% of mean target prices, when RecommendationTrend < 3',
         valueField: 'mychoice',
-        sortField: 'mychoicePercent',
-        sortFieldCaption: 'My choice percent'
+        buttons: [{
+                caption: 'My choice percent',
+                sortField: 'mychoicePercent'
+            }
+        ]
     }, {
+        id: 'ticker',
         caption: 'Ticker',
         description: 'Ticker',
         valueField: 'tickerLink',
-        sortField: 'ticker',
-        sortFieldCaption: 'Ticker'
+        buttons: [{
+                caption: 'Ticker',
+                sortField: 'ticker'
+            }
+        ]
     }, {
+        id: 'industry',
         caption: 'Industry',
         description: 'Industry',
         valueField: 'industry',
-        sortField: 'industry',
-        sortFieldCaption: 'Industry'
+        buttons: [{
+                caption: 'Industry',
+                sortField: 'industry'
+            }
+        ]
     }, {
+        id: 'currentPrice',
         caption: 'Current price',
         description: 'Stock current price',
         valueField: 'currentPrice',
-        sortField: 'currentPrice',
-        sortFieldCaption: 'Current price'
+        buttons: [{
+                caption: 'Current price',
+                sortField: 'currentPrice'
+            }
+        ]
     }, {
+        id: 'targetPrices',
         caption: 'Target prices',
         description: 'Low - median -  high',
         valueField: 'targetPrices',
-        sortField: 'priceh',
-        sortFieldCaption: 'High target price'
+        buttons: [{
+                caption: 'High target price',
+                sortField: 'priceh'
+            }
+        ]
     }, {
+        id: 'targetPercents',
         caption: 'Percent to current price',
         description: 'Low - median -  high',
         valueField: 'targetPercents',
-        sortField: 'percenth',
-        sortFieldCaption: 'High percent'
+        buttons: [{
+                caption: 'High percent',
+                sortField: 'percenth'
+            }
+        ]
     }, {
+        id: 'rs',
         caption: 'Recommendations',
         description: 'Count of StrongBuy, Buy, Hold, Sell and StrongSell recomendations',
         valueField: 'rs',
-        sortField: 'strongBuy',
-        sortFieldCaption: 'Strong buy'
+        buttons: [{
+                caption: 'Strong buy',
+                sortField: 'strongBuy'
+            }
+        ]
     }, {
+        id: 'rt',
         caption: 'Recommendation trend',
         description: 'Mean value of StrongBuy(1), Buy(2), Hold(3), Sell(4) and StrongSell(5)',
         valueField: 'rt',
-        sortField: 'rt',
-        sortFieldCaption: 'Recommendation trend'
+        buttons: [{
+                caption: 'Recommendation trend',
+                sortField: 'rt'
+            }
+        ]
     },
 ];
 
@@ -89,7 +120,7 @@ function updateDateRender() {
 
 function columnDescriptionsRender() {
     let text = '';
-    viewFields.forEach(({
+    viewColumns.forEach(({
             caption,
             description
         }) => {
@@ -248,10 +279,10 @@ function getViewModel() {
 
 function tableRender() {
 
-    let sorted = sortByField();
+    // headers
 
     let tableString = '<table><tr>';
-    viewFields.forEach(({
+    viewColumns.forEach(({
             caption,
             description
         }) => {
@@ -260,26 +291,37 @@ function tableRender() {
     tableString += '</tr>';
 
     tableString += '<tr>'
-    viewFields.forEach(({
+    viewColumns.forEach(({
+            id,
             sortField,
-            sortFieldCaption
+            sortFieldCaption,
+            buttons
         }) => {
         tableString += "<td>";
-        if (sortField !== '') {
-            tableString += `<button type="button" sort-field="${sortField}">Order by ${sortFieldCaption}</button>`
+
+        if (buttons) {
+            buttons.forEach((item) => {
+                tableString += `<button type="button" sort-field="${item.sortField}">Order by ${item.caption}</button>`
+            });
         }
+
         tableString += "</td>";
 
     });
     tableString += '</tr>';
 
-    for (var i = 0; i < sorted.length; i++) {
-        
-		sorted[i].num = i+1;
-		
-		tableString += '<tr>';
+    let sorted = sortByField();
 
-        viewFields.forEach(({
+    // fields
+
+    for (var i = 0; i < sorted.length; i++) {
+        // for (var i = 0; i < 25; i++) {
+
+        sorted[i].num = i + 1;
+
+        tableString += '<tr>';
+
+        viewColumns.forEach(({
                 valueField
             }) => {
 
@@ -326,7 +368,7 @@ function customSort({
     if (sortField === 'ticker' ||
         sortField === 'industry' ||
         sortField === 'rt' ||
-		sortField === 'currentPrice') {
+        sortField === 'currentPrice') {
         return compare(a, b);
     } else {
         return compare(b, a);
