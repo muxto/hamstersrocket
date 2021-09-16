@@ -12,6 +12,8 @@ namespace HamstersRocket.ConsoleApp
     {
         static async Task Main(string[] args)
         {
+            args = new string[] { "-limit", "5" };
+
             var tickersLimit = -1;
             var showHelp = false;
 
@@ -54,7 +56,7 @@ namespace HamstersRocket.ConsoleApp
 
             var stockMarket = GetStockMarket(stockMarketToken, output);
 
-            var storage = GetStorage();
+            var storageFile = GetStorageFile();
 
             var financeDataProviders = await GetFinanceDataProvidersAsync();
             var financeDataManager = GetFinanceDataManager(financeDataProviders);
@@ -121,9 +123,14 @@ namespace HamstersRocket.ConsoleApp
             }
 
             var report = publisher.CreateReport(stockInfos.ToArray());
-            var formattedReport = publisher.FormatReport(report);
-            await storage.SaveReportAsync(formattedReport);
+            await storageFile.SaveReportAsync(report);
+
+            var storageDatabase = GetStorageDatabase();
+            await storageDatabase.SaveReportAsync(report);
+
             await stockInfoCache.ClearAsync();
+
+            
 
             output.Publish($"report saved");
         }
@@ -173,10 +180,14 @@ namespace HamstersRocket.ConsoleApp
             return new Core.StockMarket.Tinkoff.TinkoffStockMarket(token, output);
         }
 
-        private static IStorage GetStorage()
+        private static IStorage GetStorageFile()
         {
-            var ticks = DateTime.Now.Ticks;
             return new Core.Storage.File.StorageFile();
+        }
+
+        private static IStorage GetStorageDatabase()
+        {
+            return new Core.Storage.Sqlite.Storage("");
         }
 
         private static IOutput GetOutput()

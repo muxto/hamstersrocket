@@ -6,6 +6,9 @@ namespace HamstersRocket.Contracts.Models
     {
         public string Ticker { get; set; }
 
+        public decimal PriceLow { get; set; }
+        public decimal PriceHigh { get; set; }
+
         public decimal CurrentPrice { get; set; }
 
         public decimal TargetPriceHigh { get; set; }
@@ -33,6 +36,8 @@ namespace HamstersRocket.Contracts.Models
             {
                 Ticker = ticker,
                 CurrentPrice = currentPrice.C,
+                PriceLow = currentPrice.L,
+                PriceHigh = currentPrice.H,
 
                 TargetPriceHigh = priceTarget.TargetHigh,
                 TargetPriceMean = priceTarget.TargetMean,

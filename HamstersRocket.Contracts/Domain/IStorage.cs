@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using HamstersRocket.Contracts.Models.Publisher;
 
 namespace HamstersRocket.Contracts.Domain
 {
     public interface IStorage
     {
-        Task SaveReportAsync(string report);
+        Task SaveReportAsync(Report report);
     }
 }

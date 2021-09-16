@@ -1,6 +1,8 @@
 ﻿using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
+using HamstersRocket.Contracts.Models.Publisher;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HamstersRocket.Core.Storage.File
@@ -25,83 +27,16 @@ namespace HamstersRocket.Core.Storage.File
             _ticks = DateTime.Now.Ticks;
         }
 
-        public async Task SaveCurrentPriceAsync(string ticker, CurrentPrice currentPrice)
+        private string FormatReport(Report report)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append(ticker);
-            sb.Append(STRING_DELIMETER);
-
-            sb.Append(currentPrice.O);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(currentPrice.H);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(currentPrice.L);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(currentPrice.C);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(currentPrice.PC);
-            sb.Append(STRING_DELIMETER);
-
-            var newLine = sb.ToString();
-
-            var lines = new[] { newLine };
-
-            await System.IO.File.AppendAllLinesAsync(GetFilename(CURRENT_PRICE), lines);
+            var json = JsonSerializer.Serialize(report);
+            return json;
         }
 
-        public async Task SavePriceTargetAsync(string ticker, PriceTarget priceTarget)
+        public async Task SaveReportAsync(Report report)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append(ticker);
-            sb.Append(STRING_DELIMETER);
-
-            sb.Append(priceTarget.TargetHigh);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(priceTarget.TargetLow);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(priceTarget.TargetMedian);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(priceTarget.TargetMean);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(priceTarget.LastUpdated.ToShortDateString());
-            sb.Append(STRING_DELIMETER);
-
-            var newLine = sb.ToString();
-
-            var lines = new[] { newLine };
-
-            await System.IO.File.AppendAllLinesAsync(GetFilename(TARGET_PRICE), lines);
-        }
-
-        public async Task SaveRecommendationTrendAsync(string ticker, RecommendationTrend recommendationTrend)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append(ticker);
-            sb.Append(STRING_DELIMETER);
-
-            sb.Append(recommendationTrend.StrongBuy);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(recommendationTrend.Buy);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(recommendationTrend.Hold);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(recommendationTrend.Sell);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(recommendationTrend.StrongSell);
-            sb.Append(STRING_DELIMETER);
-            sb.Append(recommendationTrend.Period.ToShortDateString());
-            sb.Append(STRING_DELIMETER);
-
-            var newLine = sb.ToString();
-
-            var lines = new[] { newLine };
-
-            await System.IO.File.AppendAllLinesAsync(GetFilename(RECOMMENDATION_TREND), lines);
-        }
-
-        public async Task SaveReportAsync(string report)
-        {
-            await System.IO.File.WriteAllTextAsync("report.json", report);
+            var formattedReport = FormatReport(report);
+            await System.IO.File.WriteAllTextAsync("report.json", formattedReport);
         }
     }
 }

@@ -18,11 +18,5 @@ namespace HamstersRocket.Core.Publisher.Json
 
             return report;
         }
-
-        public string FormatReport(Report report)
-        {
-            var json = JsonSerializer.Serialize(report);
-            return json;
-        }
     }
 }
