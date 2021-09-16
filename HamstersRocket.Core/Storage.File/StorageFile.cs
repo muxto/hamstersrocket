@@ -1,5 +1,4 @@
 ﻿using HamstersRocket.Contracts.Domain;
-using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using HamstersRocket.Contracts.Models.Publisher;
 using System;
 using System.Text.Json;
@@ -37,6 +36,11 @@ namespace HamstersRocket.Core.Storage.File
         {
             var formattedReport = FormatReport(report);
             await System.IO.File.WriteAllTextAsync("report.json", formattedReport);
+        }
+
+        public void SaveReport(Report report)
+        {
+            throw new NotImplementedException();
         }
     }
 }

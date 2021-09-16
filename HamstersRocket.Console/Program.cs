@@ -10,16 +10,27 @@ namespace HamstersRocket.ConsoleApp
 {
     class Program
     {
+        class Options
+        {
+            public bool ShowHelp = false;
+
+            public bool HasTickersLimit => TickersLimit > 0;
+            public int TickersLimit = -1;
+
+            public bool NeedToGetHistoricCandles => GetHistoricCandlesMonthAgo > 0;
+            public int GetHistoricCandlesMonthAgo = -1;
+        }
+
         static async Task Main(string[] args)
         {
-            args = new string[] { "-limit", "5" };
+            args = new string[] { "-historic_candles_month", "6" };
 
-            var tickersLimit = -1;
-            var showHelp = false;
+            var options = new Options();
 
             var p = new OptionSet() {
-                { "h|?|help",  v => { showHelp = v != null; } },
-                { "l|limit=",   v => { int.TryParse(v, out tickersLimit); } },
+                { "h|?|help",  v => { options.ShowHelp = v != null; } },
+                { "l|limit=",   v => { int.TryParse(v, out options.TickersLimit); } },
+                { "historic_candles_month=",   v => { int.TryParse(v, out options.GetHistoricCandlesMonthAgo); } },
             };
 
             List<string> extra;
@@ -35,18 +46,21 @@ namespace HamstersRocket.ConsoleApp
                 return;
             }
 
-            if (showHelp)
+            if (options.ShowHelp)
             {
                 ShowHelp(p);
                 return;
             }
 
-            await Run(tickersLimit);
+            await Run(options);
         }
 
-        static async Task Run (int tickersLimit)
+        static async Task Run (Options options)
         {
             var output = GetOutput();
+
+            output.Publish($"TickersLimit {options.TickersLimit}");
+            output.Publish($"GetHistoricCandles {options.GetHistoricCandlesMonthAgo}");
 
             var stockMarketToken = await GetStockMarketTokenAsync();
             if (stockMarketToken == null)
@@ -68,19 +82,81 @@ namespace HamstersRocket.ConsoleApp
 
             var n = tickers.Length;
 
+            // TODO test sqlite
+            if (options.NeedToGetHistoricCandles)
+            {
+                var req = 0;
+
+                var storageDatabase2 = GetStorageDatabase();
+
+
+
+                for (int i = 0; i < n; i++)
+                {
+                    if (i == options.TickersLimit)
+                    {
+                        break;
+                    }
+
+                    var ticker = tickers[i];
+
+                    output.Publish($"{ticker} {i}/{n}");
+
+                    if (req > 100)
+                    {
+                        output.Publish($"wait");
+                        await Task.Delay(360 * 1000);
+                        req = 0;
+                    }
+
+                    var candles = await stockMarket.GetHistoricCandlesAsync(ticker, options.GetHistoricCandlesMonthAgo);
+                    req += 2;
+
+                    if (candles == null )
+                    {
+                        continue;
+                    }
+
+                    foreach (var c in candles)
+                    {
+                        var rep = new HamstersRocket.Contracts.Models.Publisher.Report()
+                        {
+                            UpdateDate = c.Date,
+                            Stocks = new StockInfo[]
+                            {
+                                new StockInfo()
+                                {
+                                    Ticker = ticker,
+                                    PriceHigh = c.Price.H,
+                                    PriceLow = c.Price.L
+                                }
+                            }
+                        };
+
+                        storageDatabase2.SaveReport(rep);
+                    }
+
+
+
+                    //await Task.Delay(2000);
+                }
+
+               
+
+                output.Publish($"historic candles saved");
+
+                return;
+            }
+
+
             var stockInfos = new List<StockInfo>();
 
             var stockInfosFromCache = await stockInfoCache.GetAllAsync();
 
-            if (tickersLimit > 0)
-            {
-                output.Publish($"tickers limit = {tickersLimit}");
-            }
-
             var tryCount = 0;
             for (int i = 0; i < n; i++)
             {
-                if (i == tickersLimit)
+                if (i == options.TickersLimit)
                 {
                     break;
                 }
@@ -126,11 +202,9 @@ namespace HamstersRocket.ConsoleApp
             await storageFile.SaveReportAsync(report);
 
             var storageDatabase = GetStorageDatabase();
-            await storageDatabase.SaveReportAsync(report);
+            storageDatabase.SaveReport(report);
 
             await stockInfoCache.ClearAsync();
-
-            
 
             output.Publish($"report saved");
         }
@@ -219,9 +293,6 @@ namespace HamstersRocket.ConsoleApp
 
             return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
         }
-
-
-
 
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
         {

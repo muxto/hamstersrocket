@@ -2,7 +2,6 @@
 using HamstersRocket.Contracts.Models;
 using HamstersRocket.Contracts.Models.Publisher;
 using System;
-using System.Text.Json;
 
 namespace HamstersRocket.Core.Publisher.Json
 {

@@ -1,12 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
 using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.Publisher;
 using Microsoft.Data.Sqlite;
 using Dapper;
-using HamstersRocket.Core.Storage.Sqlite.Models;
 
 namespace HamstersRocket.Core.Storage.Sqlite
 {
@@ -27,28 +24,30 @@ namespace HamstersRocket.Core.Storage.Sqlite
 
         private SqliteConnection SimpleDbConnection()
         {
-            return new SqliteConnection("Data Source=" + DbFile);
+            var cnn = new SqliteConnection($"Data Source={DbFile}");
+            cnn.Open();
+            cnn.Execute("PRAGMA journal_mode = 'wal'");
+            return cnn;
         }
 
-        private async Task CreateDatabaseAsync()
+        private void CreateDatabase()
         {
             // logger.AddInfo("Create database " + DATABASE_NAME);
 
             using (var cnn = SimpleDbConnection())
             {
-                await cnn.OpenAsync();
-                await cnn.ExecuteAsync(
+                cnn.Execute(
                     @"create table Tickers
                      (
-                        Id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Id                      INTEGER PRIMARY KEY,
                         Ticker                  TEXT NOT NULL UNIQUE,
                         Industry                TEXT,
                         DateCreation            DEFAULT CURRENT_TIMESTAMP
                      );
                      create table PricesAndRecommendations
                      (
-                        Id                      INTEGER PRIMARY KEY AUTOINCREMENT,
-                        TickerId                INTEGER UNIQUE NOT NULL REFERENCES Tickers(Id) ON DELETE CASCADE,
+                        Id                      INTEGER PRIMARY KEY,
+                        TickerId                INTEGER NOT NULL REFERENCES Tickers(Id) ON DELETE CASCADE,
                         Date                    TEXT NOT NULL,
                         PriceLow                REAL,
                         PriceHigh               REAL,
@@ -70,72 +69,7 @@ namespace HamstersRocket.Core.Storage.Sqlite
 
         public async Task SaveReportAsync(Report report)
         {
-            if (!System.IO.File.Exists(DbFile))
-            {
-                await CreateDatabaseAsync();
-            }
-
-            using (var cnn = SimpleDbConnection())
-            {
-                await cnn.OpenAsync();
-
-                foreach (var stock in report.Stocks)
-                {
-                    var obj = new
-                    {
-                        Ticker = stock.Ticker,
-
-                        Industry = stock.Industry,
-
-                        Date = report.UpdateDate.ToShortDateString(),
-                    
-                        PriceLow = stock.PriceLow,
-                        PriceHigh = stock.PriceHigh,
-
-                        TargetPriceLow = stock.TargetPriceLow,
-                        TargetPriceMean = stock.TargetPriceMean,
-                        TargetPriceHigh = stock.TargetPriceHigh,
-
-                        StrongBuy = stock.StrongBuy,
-                        Buy = stock.Buy,
-                        Hold = stock.Hold,
-                        Sell = stock.Sell,
-                        StrongSell = stock.StrongSell
-                    };
-
-                    await cnn.ExecuteAsync(
-                        @"INSERT OR IGNORE INTO Tickers(Ticker, Industry) VALUES ( @Ticker, @Industry);
-
-                        INSERT OR IGNORE INTO PricesAndRecommendations(
-                            TickerId,
-                            Date,
-                            PriceLow,
-                            PriceHigh,
-                            TargetPriceLow,
-                            TargetPriceMean,
-                            TargetPriceHigh,
-                            StrongBuy,
-                            Buy,
-                            Hold,
-                            Sell,
-                            StrongSell)
-                        SELECT t.Id TickerId, 
-                            @Date, 
-                            @PriceLow, 
-                            @PriceHigh, 
-                            @TargetPriceLow,
-                            @TargetPriceMean,
-                            @TargetPriceHigh, 
-                            @StrongBuy,
-                            @Buy,
-                            @Hold,
-                            @Sell,
-                            @StrongSell 
-                        FROM Tickers t WHERE t.Ticker = @Ticker", obj);
-                }
-
-                // logger.AddInfo("done");
-            }
+            throw new System.NotImplementedException();
         }
 
         public void AddTags(long id, string[] tags)
@@ -205,6 +139,72 @@ namespace HamstersRocket.Core.Storage.Sqlite
 
         }
 
+        public void SaveReport(Report report)
+        {
+            if (!System.IO.File.Exists(DbFile))
+            {
+                CreateDatabase();
+            }
 
+            using (var cnn = SimpleDbConnection())
+            {
+                foreach (var stock in report.Stocks)
+                {
+                    var obj = new
+                    {
+                        Ticker = stock.Ticker,
+
+                        Industry = stock.Industry,
+
+                        Date = report.UpdateDate.ToShortDateString(),
+
+                        PriceLow = stock.PriceLow,
+                        PriceHigh = stock.PriceHigh,
+
+                        TargetPriceLow = stock.TargetPriceLow,
+                        TargetPriceMean = stock.TargetPriceMean,
+                        TargetPriceHigh = stock.TargetPriceHigh,
+
+                        StrongBuy = stock.StrongBuy,
+                        Buy = stock.Buy,
+                        Hold = stock.Hold,
+                        Sell = stock.Sell,
+                        StrongSell = stock.StrongSell
+                    };
+
+                    cnn.Execute(
+                        @"INSERT OR IGNORE INTO Tickers(Ticker, Industry) VALUES ( @Ticker, @Industry);
+
+                        INSERT OR IGNORE INTO PricesAndRecommendations(
+                            TickerId,
+                            Date,
+                            PriceLow,
+                            PriceHigh,
+                            TargetPriceLow,
+                            TargetPriceMean,
+                            TargetPriceHigh,
+                            StrongBuy,
+                            Buy,
+                            Hold,
+                            Sell,
+                            StrongSell)
+                        SELECT t.Id TickerId, 
+                            @Date, 
+                            @PriceLow, 
+                            @PriceHigh, 
+                            @TargetPriceLow,
+                            @TargetPriceMean,
+                            @TargetPriceHigh, 
+                            @StrongBuy,
+                            @Buy,
+                            @Hold,
+                            @Sell,
+                            @StrongSell 
+                        FROM Tickers t WHERE t.Ticker = @Ticker", obj);
+                }
+
+                // logger.AddInfo("done");
+            }
+        }
     }
 }

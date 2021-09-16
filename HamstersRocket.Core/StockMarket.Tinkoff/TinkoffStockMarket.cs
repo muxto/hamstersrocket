@@ -134,6 +134,37 @@ namespace HamstersRocket.Core.StockMarket.Tinkoff
 
             return tickers;
         }
-    }
 
+        public async Task<HamstersRocket.Contracts.Models.Candle[]> GetHistoricCandlesAsync(string ticker, int monthsAgo)
+        {
+            await Refresh();
+
+            var end = DateTime.Now;
+            var start = end.AddMonths(-monthsAgo);
+
+            var instruments = await Context.MarketSearchByTickerAsync(ticker);
+
+            if (instruments.Instruments.Count != 0)
+            {
+                var figi = instruments.Instruments.FirstOrDefault().Figi;
+
+                var candles = await Context.MarketCandlesAsync(figi, start, end, CandleInterval.Day);
+
+                var domainCandles = candles.Candles.Select(x => new HamstersRocket.Contracts.Models.Candle()
+                {
+                    Ticker = ticker,
+                    Date = x.Time,
+                    Price = new Contracts.Models.FinanceDataProvider.CurrentPrice()
+                    {
+                        H = x.High,
+                        L = x.Low
+                    },
+                });
+
+                return domainCandles.ToArray();
+            }
+
+            return default;
+        }
+    }
 }
