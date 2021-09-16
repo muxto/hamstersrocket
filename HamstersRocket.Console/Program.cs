@@ -23,7 +23,9 @@ namespace HamstersRocket.ConsoleApp
 
         static async Task Main(string[] args)
         {
-            args = new string[] { "-historic_candles_month", "6" };
+            //args = new string[] { "-historic_candles_month", "6" };
+
+           // args = new string[] { "-historic_candles_month", "6" };
 
             var options = new Options();
 
