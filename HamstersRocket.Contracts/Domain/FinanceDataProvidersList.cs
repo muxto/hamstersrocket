@@ -4,5 +4,6 @@
     {
         Finnhub,
         TipRanks,
+        SeekingAlpha
     }
 }

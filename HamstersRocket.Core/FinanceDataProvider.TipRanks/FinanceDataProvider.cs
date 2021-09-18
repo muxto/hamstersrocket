@@ -6,9 +6,9 @@ using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto;
 
-namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
+namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
 {
-    public class FinanceDataProvider : Domain.IFinanceDataProvider
+    public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://www.tipranks.com/api/stocks";
 
@@ -72,7 +72,7 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
             throw new System.NotImplementedException();
         }
 
-        public async Task<string> GetIndustryAsync(string ticker)
+        public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
             var model = await GetData(ticker);
             if (model == null)
@@ -80,7 +80,11 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
                 return null;
             }
 
-            return model.PortfolioHoldingData?.SectorId;
+            return new AboutCompany()
+            {
+                Ticker = ticker,
+                Industry = model.PortfolioHoldingData?.SectorId
+            };
         }
     }
 }
