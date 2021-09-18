@@ -16,7 +16,6 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
         {
             var model = new Contracts.Models.FinanceDataProvider.RecommendationTrend()
             {
-                Ticker = symbol,
                 StrongBuy = strongBuy,
                 Buy = buy,
                 Hold = hold,

@@ -275,8 +275,9 @@ namespace HamstersRocket.ConsoleApp
         {
             return providerName switch
             {
-                FinanceDataProviders.Finnhub => new Contracts.FinanceDataProvider.Finnhub.FinanceDataProvider(token),
-                FinanceDataProviders.TipRanks => new Contracts.FinanceDataProvider.TipRanks.FinanceDataProvider(),
+                FinanceDataProviders.Finnhub => new Core.FinanceDataProvider.Finnhub.FinanceDataProvider(token),
+                FinanceDataProviders.TipRanks => new Core.FinanceDataProvider.TipRanks.FinanceDataProvider(),
+                FinanceDataProviders.SeekingAlpha => new Core.FinanceDataProvider.SeekingAlpha.FinanceDataProvider(),
                 _ => throw new NotSupportedException(),
             };
         }
@@ -293,7 +294,13 @@ namespace HamstersRocket.ConsoleApp
 
             var financeDataProviderTipRanks = GetFinanceDataProvider(FinanceDataProviders.TipRanks, null);
 
-            return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
+            var financeDataProviderSeekingAlpha = GetFinanceDataProvider(FinanceDataProviders.SeekingAlpha, null);
+
+            return new[] {
+                financeDataProviderFinnhub,
+                financeDataProviderTipRanks,
+                financeDataProviderSeekingAlpha
+            };
         }
 
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)

@@ -5,9 +5,9 @@ using System.Linq;
 using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
 
-namespace HamstersRocket.Contracts.FinanceDataProvider.Finnhub
+namespace HamstersRocket.Core.FinanceDataProvider.Finnhub
 {
-    public class FinanceDataProvider : Domain.IFinanceDataProvider
+    public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://finnhub.io/api/v1/";
         private string _token;
@@ -56,9 +56,11 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.Finnhub
             return models.Select(x => x.ToDomain()).ToArray();
         }
 
-        public Task<string> GetIndustryAsync(string ticker)
+        public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
-            throw new System.NotImplementedException();
+            var query = $"{_baseUrl}/stock/profile2?symbol={ticker}&token={_token}";
+            var model = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.AboutCompany>(query);
+            return model.ToDomain();
         }
     }
 }

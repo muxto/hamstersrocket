@@ -18,25 +18,30 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
         {
             var finnhub = dataProviders.First(x => x.Provider == FinanceDataProviders.Finnhub);
             var tipranks = dataProviders.First(x => x.Provider == FinanceDataProviders.TipRanks);
+            var seekingAlpha = dataProviders.First(x => x.Provider == FinanceDataProviders.SeekingAlpha);
 
             var currentPrice = await finnhub.GetCurrentPriceAsync(ticker);
             await Task.Delay(1000);
 
-            var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
+            var recommendationTrends = await seekingAlpha.GetRecommendationTrendsAsync(ticker);
+            //var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
             await Task.Delay(1000);
 
             var recommendationTrend = recommendationTrends
                 .OrderBy(x => x.Period)
                 .FirstOrDefault() ?? new Contracts.Models.FinanceDataProvider.RecommendationTrend();
 
-            var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
-            var industry = await tipranks.GetIndustryAsync(ticker);
-            //await Task.Delay(1000);
+            var targetPrice = await seekingAlpha.GetPriceTargetAsync(ticker);
+            //var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
+            await Task.Delay(1000);
+
+            var aboutCompany = await finnhub.GetAboutCompanyAsync(ticker);
+            await Task.Delay(1000);
 
             var companyInfo = new CompanyInfo()
             {
                 Ticker = ticker,
-                Industry = industry,
+                Industry = aboutCompany.Industry,
                 CurrentPrice = currentPrice,
                 PriceTarget = targetPrice,
                 RecommendationTrend = recommendationTrend,
