@@ -27,6 +27,11 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
         }
 
+        public void Clear()
+        {
+            lastData = null;
+        }
+
         private async Task<T> GetJson<T>(string query)
         {
             var response = await _httpClient.GetAsync(query);

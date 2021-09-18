@@ -20,6 +20,9 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             var tipranks = dataProviders.First(x => x.Provider == FinanceDataProviders.TipRanks);
             var seekingAlpha = dataProviders.First(x => x.Provider == FinanceDataProviders.SeekingAlpha);
 
+            tipranks.Clear();
+            seekingAlpha.Clear();
+
             var currentPrice = await finnhub.GetCurrentPriceAsync(ticker);
             await Task.Delay(1000);
 
@@ -27,7 +30,7 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             //var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
             await Task.Delay(1000);
 
-            var recommendationTrend = recommendationTrends
+            var recommendationTrend = recommendationTrends?
                 .OrderBy(x => x.Period)
                 .FirstOrDefault() ?? new Contracts.Models.FinanceDataProvider.RecommendationTrend();
 

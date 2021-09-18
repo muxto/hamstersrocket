@@ -62,5 +62,10 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub
             var model = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.AboutCompany>(query);
             return model.ToDomain();
         }
+
+        public void Clear()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
