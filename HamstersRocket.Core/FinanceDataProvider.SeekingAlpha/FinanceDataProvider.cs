@@ -2,6 +2,7 @@
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
     {
         private string _baseUrl = "https://seekingalpha.com";
 
-        private HttpClient _httpClient;
+        private HttpClient httpClient;
+
         private JsonSerializerOptions _jsonSerializerOptions;
 
         public FinanceDataProviders Provider => FinanceDataProviders.SeekingAlpha;
@@ -21,9 +23,17 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
 
         public FinanceDataProvider()
         {
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = true,
+                CookieContainer = cookieContainer,
+                UseCookies = true,
+            };
+
+            httpClient = new HttpClient(handler);
+            
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36");
 
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -36,11 +46,19 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
 
         private async Task<T> GetJson<T>(string query)
         {
-            var response = await _httpClient.GetAsync(query);
+            var response = await httpClient.GetAsync(query);
+
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 return default;
             }
+
+            // fail redirect
+            if (response.RequestMessage.RequestUri.ToString () != query)
+            {
+                return default;
+            }
+
             var message = response.EnsureSuccessStatusCode();
             var content = await message.Content.ReadAsStringAsync();
             var model = JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);

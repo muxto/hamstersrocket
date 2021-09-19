@@ -11,7 +11,8 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
     public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://www.tipranks.com/api/stocks";
-
+        private string _baseUrl2 = "https://widgets.tipranks.com/api/IB";
+        
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
 
@@ -57,14 +58,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var model = await GetData(ticker);
-            if (model == null)
+            var query = $"{_baseUrl2}/analystratings?ticker={ticker}";
+            var analystRatings = await GetJson<AnalystRatings>(query);
+
+            if (analystRatings == null)
             {
                 return new PriceTarget();
             }
 
-            var targetPrice = model.PtConsensus?.FirstOrDefault();
-            return targetPrice.ToDomain();
+            return analystRatings.ToDomain();
         }
 
         public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)

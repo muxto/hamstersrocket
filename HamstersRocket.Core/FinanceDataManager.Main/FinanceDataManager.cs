@@ -26,16 +26,16 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             var currentPrice = await finnhub.GetCurrentPriceAsync(ticker);
             await Task.Delay(1000);
 
-            var recommendationTrends = await seekingAlpha.GetRecommendationTrendsAsync(ticker);
-            //var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
+            //var recommendationTrends = await seekingAlpha.GetRecommendationTrendsAsync(ticker);
+            var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
             await Task.Delay(1000);
 
             var recommendationTrend = recommendationTrends?
                 .OrderBy(x => x.Period)
                 .FirstOrDefault() ?? new Contracts.Models.FinanceDataProvider.RecommendationTrend();
 
-            var targetPrice = await seekingAlpha.GetPriceTargetAsync(ticker);
-            //var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
+            //var targetPrice = await seekingAlpha.GetPriceTargetAsync(ticker);
+            var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
             await Task.Delay(1000);
 
             var aboutCompany = await finnhub.GetAboutCompanyAsync(ticker);
