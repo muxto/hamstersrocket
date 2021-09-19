@@ -9,7 +9,7 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
 
         public Contracts.Models.FinanceDataProvider.PriceTarget ToDomainPriceTarget()
         {
-            var targetPrice = decimal.Parse(data.target_price, CultureInfo.InvariantCulture);
+            var targetPrice = TryParse(data.target_price);
 
             var model = new Contracts.Models.FinanceDataProvider.PriceTarget()
             {
@@ -25,17 +25,25 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
 
         public Contracts.Models.FinanceDataProvider.RecommendationTrend ToDomainRecommendationTrend()
         {
-            var model = new Contracts.Models.FinanceDataProvider.RecommendationTrend()
+            if (data == null)
             {
-                StrongBuy = (int)decimal.Parse(data.analysts_buy, CultureInfo.InvariantCulture),
-                Buy = (int)decimal.Parse(data.analysts_outperform, CultureInfo.InvariantCulture),
-                Hold = (int)decimal.Parse(data.analysts_hold, CultureInfo.InvariantCulture),
-                Sell = (int)decimal.Parse(data.analysts_underperform, CultureInfo.InvariantCulture),
-                StrongSell = (int)decimal.Parse(data.analysts_sell, CultureInfo.InvariantCulture),
+                return new Contracts.Models.FinanceDataProvider.RecommendationTrend();
+            }
+
+            return new Contracts.Models.FinanceDataProvider.RecommendationTrend
+            {
+                StrongBuy = TryParse(data.analysts_buy),
+                Buy = TryParse(data.analysts_outperform),
+                Hold = TryParse(data.analysts_hold),
+                Sell = TryParse(data.analysts_underperform),
+                StrongSell = TryParse(data.analysts_sell),
                 Period = DateTime.Now
             };
+        }
 
-            return model;
+        private int TryParse(string field)
+        {
+            return field == null ? 0 : (int)decimal.Parse(field, CultureInfo.InvariantCulture);
         }
     }
 
