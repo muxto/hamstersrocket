@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import PageReport from '../views/PageReport.vue';
+import PageReport from '../views/PageReport/index.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
