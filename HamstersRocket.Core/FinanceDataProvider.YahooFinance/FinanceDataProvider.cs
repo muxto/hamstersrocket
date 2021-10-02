@@ -1,42 +1,42 @@
-﻿using System.Threading.Tasks;
+﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using System.Net.Http;
 using System.Text.Json;
-using HamstersRocket.Contracts.Domain;
-using HamstersRocket.Contracts.Models.FinanceDataProvider;
-using HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto;
+using System.Threading.Tasks;
+using System.Linq;
 
-namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
+namespace HamstersRocket.Core.FinanceDataProvider.YahooFinance
 {
     /// <summary>
     /// Unnoficial API, not legal to use it
     /// </summary>
     public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
-        private string _baseUrl = "https://www.tipranks.com/api/stocks";
-        private string _baseUrl2 = "https://widgets.tipranks.com/api/IB";
-        
+        private string _baseUrl = "https://query1.finance.yahoo.com/v10/finance/quoteSummary";
+
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
+        private readonly int _delay;
 
-        public FinanceDataProviders Provider => FinanceDataProviders.TipRanks;
+        public FinanceDataProviders Provider => FinanceDataProviders.YahooFinance;
 
-        private Data lastData;
-
-        public FinanceDataProvider()
+        public FinanceDataProvider(int delay)
         {
             _httpClient = new HttpClient();
 
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            _delay = delay;
         }
 
         public void Clear()
         {
-            lastData = null;
         }
 
         private async Task<T> GetJson<T>(string query)
         {
+            await Task.Delay(_delay);
+
             var response = await _httpClient.GetAsync(query);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -48,27 +48,17 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
             return model;
         }
 
-        private async Task<Data> GetData(string ticker)
-        {
-            if (lastData == null || lastData.Ticker != ticker)
-            {
-                var query = $"{_baseUrl}/getData/?name={ticker}";
-                lastData = await GetJson<Data>(query);
-            }
-            return lastData;
-        }
-
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var query = $"{_baseUrl2}/analystratings?ticker={ticker}";
-            var analystRatings = await GetJson<AnalystRatings>(query);
+            var query = $"{_baseUrl}/{ticker}?modules=financialData";
+            var financialData = await GetJson<Dto.Data>(query);
 
-            if (analystRatings == null)
+            if (financialData == null)
             {
                 return new PriceTarget();
             }
 
-            return analystRatings.ToDomain();
+            return financialData.quoteSummary.result.FirstOrDefault().financialData.ToDomain();
         }
 
         public Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
@@ -81,19 +71,9 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
             throw new System.NotImplementedException();
         }
 
-        public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
+        public Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
-            var model = await GetData(ticker);
-            if (model == null)
-            {
-                return null;
-            }
-
-            return new AboutCompany()
-            {
-                Ticker = ticker,
-                Industry = model.PortfolioHoldingData?.SectorId
-            };
+            throw new System.NotImplementedException();
         }
     }
 }

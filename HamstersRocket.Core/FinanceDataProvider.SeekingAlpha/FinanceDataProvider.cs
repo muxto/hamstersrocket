@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
 {
+    /// <summary>
+    /// Unnoficial API, not legal to use it
+    /// </summary>
     public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://seekingalpha.com";
@@ -96,15 +99,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
             return model.ToDomainPriceTarget();
         }
 
-        public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
+        public async Task<RecommendationTrend> GetRecommendationTrends(string ticker)
         {
             var model = await GetData(ticker);
             if (model == null)
             {
-                return new RecommendationTrend[] { };
+                return new RecommendationTrend();
             }
 
-            return new RecommendationTrend[] { model.ToDomainRecommendationTrend(), };
+            return model.ToDomainRecommendationTrend();
         }
     }
 }

@@ -4,6 +4,8 @@
     {
         Finnhub,
         TipRanks,
-        SeekingAlpha
+        SeekingAlpha,
+        AlphaVantage,
+        YahooFinance
     }
 }

@@ -12,11 +12,8 @@ namespace HamstersRocket.Core.StockMarket.Tinkoff
     {
         private string Token { get; set; }
         private Context Context { get; set; }
-
         private Portfolio Portfolio { get; set; }
-
         private IOutput Output { get; set; }
-
 
         public TinkoffStockMarket(string token, IOutput output)
         {

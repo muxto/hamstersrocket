@@ -13,7 +13,6 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
 
             var model = new Contracts.Models.FinanceDataProvider.PriceTarget()
             {
-                LastUpdated = DateTime.Now,
                 TargetHigh = targetPrice,
                 TargetLow = targetPrice,
                 TargetMean = targetPrice,
