@@ -12,58 +12,77 @@ namespace HamstersRocket.Core.FinanceDataProvider.YahooFinance
     /// </summary>
     public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
-        private string _baseUrl = "https://query1.finance.yahoo.com/v10/finance/quoteSummary";
+        private string baseUrl = "https://query1.finance.yahoo.com/v10/finance/quoteSummary";
 
-        private HttpClient _httpClient;
-        private JsonSerializerOptions _jsonSerializerOptions;
-        private readonly int _delay;
+        private HttpClient httpClient;
+        private JsonSerializerOptions jsonSerializerOptions;
+        private readonly int delay;
+
+        private string lastTicker;
+        private Dto.FinancialData lastFinancialData;
 
         public FinanceDataProviders Provider => FinanceDataProviders.YahooFinance;
 
         public FinanceDataProvider(int delay)
         {
-            _httpClient = new HttpClient();
+            httpClient = new HttpClient();
 
-            _jsonSerializerOptions = new JsonSerializerOptions();
-            _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
-            _delay = delay;
+            jsonSerializerOptions = new JsonSerializerOptions();
+            jsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            this.delay = delay;
         }
 
-        public void Clear()
+        private async Task<Dto.FinancialData> GetFinancialData(string ticker)
         {
+            if (lastTicker == ticker && lastFinancialData != null)
+            {
+                return lastFinancialData;
+            }
+
+            lastTicker = ticker;
+            lastFinancialData = null;
+
+            var query = $"{baseUrl}/{ticker}?modules=financialData";
+            var data = await GetJson<Dto.Data>(query);
+            lastFinancialData = data?.quoteSummary.result.FirstOrDefault().financialData;
+            return lastFinancialData;
         }
 
         private async Task<T> GetJson<T>(string query)
         {
-            await Task.Delay(_delay);
+            await Task.Delay(delay);
 
-            var response = await _httpClient.GetAsync(query);
+            var response = await httpClient.GetAsync(query);
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 return default;
             }
             var message = response.EnsureSuccessStatusCode();
             var content = await message.Content.ReadAsStringAsync();
-            var model = JsonSerializer.Deserialize<T>(content, _jsonSerializerOptions);
+            var model = JsonSerializer.Deserialize<T>(content, jsonSerializerOptions);
             return model;
         }
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var query = $"{_baseUrl}/{ticker}?modules=financialData";
-            var financialData = await GetJson<Dto.Data>(query);
-
+            var financialData = await GetFinancialData(ticker);
             if (financialData == null)
             {
                 return new PriceTarget();
             }
 
-            return financialData.quoteSummary.result.FirstOrDefault().financialData.ToDomain();
+            return financialData.ToDomain();
         }
 
-        public Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
         {
-            throw new System.NotImplementedException();
+            var financialData = await GetFinancialData(ticker);
+            if (financialData == null)
+            {
+                return new CurrentPrice();
+            }
+
+            return new CurrentPrice() { C = financialData.currentPrice.raw };
         }
 
         public Task<RecommendationTrend> GetRecommendationTrends(string ticker)

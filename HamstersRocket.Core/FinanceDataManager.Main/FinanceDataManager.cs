@@ -19,7 +19,7 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             var finnhub = dataProviders.First(x => x.Provider == FinanceDataProviders.Finnhub);
             var yahooFinance = dataProviders.First(x => x.Provider == FinanceDataProviders.YahooFinance);
 
-            var currentPrice = await finnhub.GetCurrentPriceAsync(ticker);
+            var currentPrice = await yahooFinance.GetCurrentPriceAsync(ticker);
             var recommendationTrend = await finnhub.GetRecommendationTrends(ticker);
             var targetPrice = await yahooFinance.GetPriceTargetAsync(ticker);
             var aboutCompany = await finnhub.GetAboutCompanyAsync(ticker);
