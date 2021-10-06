@@ -8,6 +8,7 @@
         <th>Industry</th>
         <th>Current price</th>
         <th>Recommendations</th>
+        <th>My Take Profit</th>
       </tr>
       <tr v-for="(item, index) in stocks" :key="index">
         <td>{{ index + 1 }}</td>
@@ -15,6 +16,7 @@
         <td>{{ item['industry'] }}</td>
         <td>{{ item['currentPrice'] }}</td>
         <td>{{ item['rs'] }}</td>
+        <td>{{ item['mychoice'] }}</td>
       </tr>
     </tbody>
   </table>

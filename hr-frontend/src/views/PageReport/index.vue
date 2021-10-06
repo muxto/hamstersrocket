@@ -162,7 +162,6 @@ export default defineComponent({
 
         const rowViewModel = {} as IRowViewModel;
 
-        rowViewModel.tickerLink = `<a target="_blank" href='https://finance.yahoo.com/quote/${row.t}'>${row.t}</a>`;
         rowViewModel.ticker = row.t;
 
         rowViewModel.industry = row.ind === null ? '' : row.ind;
