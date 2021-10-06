@@ -2,12 +2,6 @@
   <div class="container">
     <h1 align="center">Hamster's Rocket!</h1>
     <h3 align="center">I hope it helps to find best-expectations-profit stocks</h3>
-    <br>
-    <div>
-      Just-for-fun project. <a href="https://www.tinkoff.ru/invest/social/profile/muxto/">Here I am</a>. <a href="https://github.com/muxto/hamstersrocket">Github</a>
-    </div>
-
-    <div class="mb-3">This table shows recommendation targets by <a href='https://finnhub.io/'>Finnhub Stock API</a> and target prices by <a href='https://tipranks.com/'>TipRanks</a> for stocks available at <a href='https://www.tinkoff.ru/invest/'>Tinkoff Investing</a></div>
 
     <h2 class="mb-3">{{ updatedate }}</h2>
 
