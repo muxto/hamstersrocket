@@ -11,8 +11,8 @@ namespace HamstersRocket.Contracts.Domain
 
         Task<CurrentPrice> GetCurrentPriceAsync(string ticker);
 
-        Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker);
+        Task<RecommendationTrend> GetRecommendationTrends(string ticker);
 
-        Task<string> GetIndustryAsync(string ticker);
+        Task<AboutCompany> GetAboutCompanyAsync(string ticker);
     }
 }

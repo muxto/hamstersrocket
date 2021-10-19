@@ -4,7 +4,6 @@ namespace HamstersRocket.Contracts.Models.FinanceDataProvider
 {
     public class RecommendationTrend
     {
-        public string Ticker { get; set; }
         public int StrongBuy { get; set; }
         public int Buy { get; set; }
         public int Hold { get; set; }

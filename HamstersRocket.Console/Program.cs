@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NDesk.Options;
 using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models;
+using System.Text.Json;
 
 namespace HamstersRocket.ConsoleApp
 {
@@ -42,21 +43,27 @@ namespace HamstersRocket.ConsoleApp
             await Run(tickersLimit);
         }
 
-        static async Task Run (int tickersLimit)
+        static async Task Run(int tickersLimit)
         {
             var output = GetOutput();
 
-            var stockMarketToken = await GetStockMarketTokenAsync();
-            if (stockMarketToken == null)
+            var config = await GetTokensAsync();
+            if (config == null)
             {
                 throw new ArgumentNullException();
             }
 
-            var stockMarket = GetStockMarket(stockMarketToken, output);
+            var tinkoffToken = config.Tinkoff.Tokens?.FirstOrDefault();
+            if (tinkoffToken == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var stockMarket = GetStockMarket(tinkoffToken, output);
 
             var storage = GetStorage();
 
-            var financeDataProviders = await GetFinanceDataProvidersAsync();
+            var financeDataProviders = GetFinanceDataProviders(config);
             var financeDataManager = GetFinanceDataManager(financeDataProviders);
 
             var publisher = GetPublisher();
@@ -138,35 +145,21 @@ namespace HamstersRocket.ConsoleApp
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        private static async Task<string> GetStockMarketTokenAsync()
+        private static async Task<Models.Config> GetTokensAsync()
         {
-            var tokenFile = "stockmarkettoken.txt";
-            if (!System.IO.File.Exists(tokenFile))
+            var fileName = "config.json";
+
+            if (!System.IO.File.Exists(fileName))
             {
                 Console.WriteLine("Not found file with token!");
                 return null;
             }
 
-            var token = await System.IO.File.ReadAllTextAsync(tokenFile);
-            return token;
+            var configString = await System.IO.File.ReadAllTextAsync(fileName);
+            var config = JsonSerializer.Deserialize<Models.Config>(configString);
+            return config;
         }
 
-        private static async Task<string> GetFinanceDataProviderToken(Contracts.Domain.FinanceDataProviders provider)
-        {
-            if (provider == FinanceDataProviders.Finnhub)
-            {
-                var tokenFile = "financedataprovidertoken.txt";
-                if (!System.IO.File.Exists(tokenFile))
-                {
-                    Console.WriteLine("Not found file with token!");
-                    return null;
-                }
-
-                var token = await System.IO.File.ReadAllTextAsync(tokenFile);
-                return token;
-            }
-            return null;
-        }
 
         private static IStockMarket GetStockMarket(string token, IOutput output)
         {
@@ -184,33 +177,24 @@ namespace HamstersRocket.ConsoleApp
             return new Core.Output.Console.Output();
         }
 
-        private static IFinanceDataProvider GetFinanceDataProvider(FinanceDataProviders providerName, string token)
+        private static IFinanceDataProvider[] GetFinanceDataProviders(Models.Config config)
         {
-            return providerName switch
-            {
-                FinanceDataProviders.Finnhub => new Contracts.FinanceDataProvider.Finnhub.FinanceDataProvider(token),
-                FinanceDataProviders.TipRanks => new Contracts.FinanceDataProvider.TipRanks.FinanceDataProvider(),
-                _ => throw new NotSupportedException(),
-            };
-        }
-
-        private static async Task<IFinanceDataProvider[]> GetFinanceDataProvidersAsync()
-        {
-            var financeDataProviderToken = await GetFinanceDataProviderToken(FinanceDataProviders.Finnhub);
-            if (financeDataProviderToken == null)
+            var finnhubToken = config.Finnhub.Tokens?.FirstOrDefault();
+            var finnhubDelay = config.Finnhub.Delay;
+            if (finnhubToken == null)
             {
                 throw new ArgumentNullException();
             }
+            var finnhub = new Core.FinanceDataProvider.Finnhub.FinanceDataProvider(finnhubToken, finnhubDelay);
 
-            var financeDataProviderFinnhub = GetFinanceDataProvider(FinanceDataProviders.Finnhub, financeDataProviderToken);
+            var yahooFinanceDelay = config.YahooFinance.Delay;
+            var yahooFinance = new Core.FinanceDataProvider.YahooFinance.FinanceDataProvider(yahooFinanceDelay);
 
-            var financeDataProviderTipRanks = GetFinanceDataProvider(FinanceDataProviders.TipRanks, null);
-
-            return new[] { financeDataProviderFinnhub, financeDataProviderTipRanks };
+            return new IFinanceDataProvider[] {
+                finnhub,
+                yahooFinance,
+            };
         }
-
-
-
 
         private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
         {

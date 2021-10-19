@@ -17,26 +17,17 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
         public async Task<CompanyInfo> GetCompanyInfoAsync(string ticker)
         {
             var finnhub = dataProviders.First(x => x.Provider == FinanceDataProviders.Finnhub);
-            var tipranks = dataProviders.First(x => x.Provider == FinanceDataProviders.TipRanks);
+            var yahooFinance = dataProviders.First(x => x.Provider == FinanceDataProviders.YahooFinance);
 
-            var currentPrice = await finnhub.GetCurrentPriceAsync(ticker);
-            await Task.Delay(1000);
-
-            var recommendationTrends = await finnhub.GetRecommendationTrendsAsync(ticker);
-            await Task.Delay(1000);
-
-            var recommendationTrend = recommendationTrends
-                .OrderBy(x => x.Period)
-                .FirstOrDefault() ?? new Contracts.Models.FinanceDataProvider.RecommendationTrend();
-
-            var targetPrice = await tipranks.GetPriceTargetAsync(ticker);
-            var industry = await tipranks.GetIndustryAsync(ticker);
-            //await Task.Delay(1000);
+            var currentPrice = await yahooFinance.GetCurrentPriceAsync(ticker);
+            var recommendationTrend = await finnhub.GetRecommendationTrends(ticker);
+            var targetPrice = await yahooFinance.GetPriceTargetAsync(ticker);
+            var aboutCompany = await finnhub.GetAboutCompanyAsync(ticker);
 
             var companyInfo = new CompanyInfo()
             {
                 Ticker = ticker,
-                Industry = industry,
+                Industry = aboutCompany.Industry,
                 CurrentPrice = currentPrice,
                 PriceTarget = targetPrice,
                 RecommendationTrend = recommendationTrend,

@@ -1,17 +1,20 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.Json;
 using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto;
 
-namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
+namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
 {
-    public class FinanceDataProvider : Domain.IFinanceDataProvider
+    /// <summary>
+    /// Unnoficial API, not legal to use it
+    /// </summary>
+    public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://www.tipranks.com/api/stocks";
-
+        private string _baseUrl2 = "https://widgets.tipranks.com/api/IB";
+        
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
 
@@ -25,6 +28,11 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
 
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        }
+
+        public void Clear()
+        {
+            lastData = null;
         }
 
         private async Task<T> GetJson<T>(string query)
@@ -52,27 +60,28 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var model = await GetData(ticker);
-            if (model == null)
+            var query = $"{_baseUrl2}/analystratings?ticker={ticker}";
+            var analystRatings = await GetJson<AnalystRatings>(query);
+
+            if (analystRatings == null)
             {
                 return new PriceTarget();
             }
 
-            var targetPrice = model.PtConsensus?.FirstOrDefault();
-            return targetPrice.ToDomain();
+            return analystRatings.ToDomain();
         }
 
-        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        public Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
+        public Task<RecommendationTrend> GetRecommendationTrends(string ticker)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<string> GetIndustryAsync(string ticker)
+        public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
             var model = await GetData(ticker);
             if (model == null)
@@ -80,7 +89,11 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.TipRanks
                 return null;
             }
 
-            return model.PortfolioHoldingData?.SectorId;
+            return new AboutCompany()
+            {
+                Ticker = ticker,
+                Industry = model.PortfolioHoldingData?.SectorId
+            };
         }
     }
 }

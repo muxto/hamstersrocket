@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HamstersRocket.Contracts.Models.FinanceDataProvider
+﻿namespace HamstersRocket.Contracts.Models.FinanceDataProvider
 {
     public class PriceTarget
     {
@@ -8,6 +6,5 @@ namespace HamstersRocket.Contracts.Models.FinanceDataProvider
         public decimal TargetLow { get; set; }
         public decimal TargetMean { get; set; }
         public decimal TargetMedian { get; set; }
-        public DateTime LastUpdated { get; set; }
     }
 }

@@ -119,6 +119,7 @@ function updateDateRender() {
 }
 
 function columnDescriptionsRender() {
+	return;
     let text = '';
     viewColumns.forEach(({
             caption,

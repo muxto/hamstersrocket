@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
+﻿namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
 {
     public class PriceTarget
     {
@@ -20,11 +18,6 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
                 TargetMean = targetMean,
                 TargetMedian = targetMedian,
             };
-
-            if (DateTime.TryParse(lastUpdated, out var datetime))
-            {
-                model.LastUpdated = datetime;
-            }
 
             return model;
         }

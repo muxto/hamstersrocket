@@ -5,26 +5,35 @@ using System.Linq;
 using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
 
-namespace HamstersRocket.Contracts.FinanceDataProvider.Finnhub
+namespace HamstersRocket.Core.FinanceDataProvider.Finnhub
 {
-    public class FinanceDataProvider : Domain.IFinanceDataProvider
+    public class FinanceDataProvider : Contracts.Domain.IFinanceDataProvider
     {
         private string _baseUrl = "https://finnhub.io/api/v1/";
         private string _token;
 
         private HttpClient _httpClient;
         private JsonSerializerOptions _jsonSerializerOptions;
+        private int _delay;
 
         public FinanceDataProviders Provider => FinanceDataProviders.Finnhub;
 
-        public FinanceDataProvider(string token)
+        public FinanceDataProvider(string token, int delay)
         {
             _token = token;
+            _delay = delay;
             _httpClient = new HttpClient();
 
             _jsonSerializerOptions = new JsonSerializerOptions();
             _jsonSerializerOptions.PropertyNameCaseInsensitive = true;
         }
+
+        private async Task<string> GetToken()
+        {
+            await Task.Delay(_delay);
+            return _token;
+        }
+
 
         private async Task<T> GetJson<T>(string query)
         {
@@ -37,26 +46,41 @@ namespace HamstersRocket.Contracts.FinanceDataProvider.Finnhub
 
         public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
         {
-            var query = $"{_baseUrl}/quote?symbol={ticker}&token={_token}";
+            var token = await GetToken();
+            var query = $"{_baseUrl}/quote?symbol={ticker}&token={token}";
             var model = await GetJson<CurrentPrice>(query);
             return model;
         }
 
         public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            var query = $"{_baseUrl}/stock/price-target?symbol={ticker}&token={_token}";
+            var token = await GetToken();
+            var query = $"{_baseUrl}/stock/price-target?symbol={ticker}&token={token}";
             var model = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.PriceTarget>(query);
             return model.ToDomain();
         }
 
-        public async Task<RecommendationTrend[]> GetRecommendationTrendsAsync(string ticker)
+        public async Task<RecommendationTrend> GetRecommendationTrends(string ticker)
         {
-            var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={_token}";
+            var token = await GetToken();
+            var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={token}";
             var models = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.RecommendationTrend[]>(query);
-            return models.Select(x => x.ToDomain()).ToArray();
+            var recommendationTrends = models.Select(x => x.ToDomain()).ToArray();
+
+            return recommendationTrends?
+               .OrderBy(x => x.Period)
+               .FirstOrDefault() ?? new RecommendationTrend();
         }
 
-        public Task<string> GetIndustryAsync(string ticker)
+        public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
+        {
+            var token = await GetToken();
+            var query = $"{_baseUrl}/stock/profile2?symbol={ticker}&token={token}";
+            var model = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.AboutCompany>(query);
+            return model.ToDomain();
+        }
+
+        public void Clear()
         {
             throw new System.NotImplementedException();
         }
