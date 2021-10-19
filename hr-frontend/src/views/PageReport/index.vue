@@ -5,15 +5,54 @@
 
     <h2 class="mb-3">{{ updatedate }}</h2>
 
+    <ul class="nav nav-tabs mb-3">
+      <li
+        class="nav-item"
+        v-for="tab in tabs"
+        @click="switchTab(tab.value)"
+        :key="tab.value"
+      >
+        <a :class="[
+          'nav-link',
+          tab.value === currentActiveTab && 'active'
+        ]" href="#">{{ tab.label }}</a>
+      </li>
+    </ul>
+
     <stock-table
+      v-if="currentActiveTab === 'strongBuyPlusBuyRecs'"
       caption="Stocks with maximum Buy and Strong Buy recommendations"
       :stocks="strongBuyPlusBuyRecs"
     />
 
     <stock-table
+      v-if="currentActiveTab === 'mychoicePercentRecs'"
       caption="Stocks with maximum difference between Target Prices and Current Price"
       :stocks="mychoicePercentRecs"
     />
+
+    <template v-if="currentActiveTab === 'search'">
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Type ticker for search"
+          v-model="searchValue"
+        >
+        <label for="searchInput">Type ticker for search</label>
+      </div>
+
+      <stock-table
+        v-if="searchTable.length"
+        caption="Search results"
+        :stocks="searchTable"
+      />
+
+      <div v-else class="alert alert-danger" role="alert">
+        No results found.
+      </div>
+    </template>
   </div>
 </template>
 
@@ -239,11 +278,42 @@ export default defineComponent({
     const strongBuyPlusBuyRecs = computed(() => prepareTableData('strongBuyPlusBuy'));
     const mychoicePercentRecs = computed(() => prepareTableData('mychoicePercent'));
 
+    const searchValue = ref('');
+    const searchTable = computed(() => viewModel
+      .value
+      .filter((result) => result.ticker.startsWith(searchValue.value)));
+
+    const tabs = [
+      {
+        label: 'Stocks with maximum Buy and Strong Buy recommendations',
+        value: 'strongBuyPlusBuyRecs',
+      },
+      {
+        label: 'Stocks with maximum difference between Target Prices and Current Price',
+        value: 'mychoicePercentRecs',
+      },
+      {
+        label: 'Search',
+        value: 'search',
+      },
+    ];
+
+    const currentActiveTab = ref('strongBuyPlusBuyRecs');
+
+    const switchTab = (newActiveTab: string) => {
+      currentActiveTab.value = newActiveTab;
+    };
+
     return {
       updatedate,
       viewModel,
+      tabs,
+      currentActiveTab,
+      switchTab,
       strongBuyPlusBuyRecs,
       mychoicePercentRecs,
+      searchTable,
+      searchValue,
     };
   },
 });
