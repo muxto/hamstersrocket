@@ -60,7 +60,7 @@ namespace HamstersRocket.Core.Storage.Postgres
 
                 var param = new
                 {
-                    ticker = aboutCompany.Ticker,
+                    ticker = ticker,
                     name = aboutCompany.Name,
                     industry = aboutCompany.Industry,
                     logo = aboutCompany.Logo,
