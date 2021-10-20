@@ -3,15 +3,10 @@ using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using System;
 using System.Threading.Tasks;
 
-namespace HamstersRocket.Core.Storage.Sqlite
+namespace HamstersRocket.Core.Storage.File
 {
     public class Storage : IStorage
     {
-        public Storage(string path)
-        {
-
-        }
-
         public Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
             throw new NotImplementedException();
@@ -32,29 +27,9 @@ namespace HamstersRocket.Core.Storage.Sqlite
             throw new NotImplementedException();
         }
 
-        public Task SaveCurrentPriceAsync(string ticker, CurrentPrice currentPrice)
+        public async Task SaveReportToFileAsync(string report)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task SavePriceTarget(string ticker, CurrentPrice currentPrice, PriceTarget priceTarget)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SavePriceTargetAsync(string ticker, PriceTarget priceTarget)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveRecommendationTrendAsync(string ticker, RecommendationTrend recommendationTrend)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveReportToFileAsync(string report)
-        {
-            throw new NotImplementedException();
+            await System.IO.File.WriteAllTextAsync("report.json", report);
         }
 
         public Task SetAboutCompanyAsync(string ticker)

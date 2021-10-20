@@ -61,10 +61,11 @@ namespace HamstersRocket.ConsoleApp
 
             var stockMarket = GetStockMarket(tinkoffToken, output);
 
-            var storage = GetStorage();
+            var fileStorage = GetFileStorage();
+            var dbStorage = GetDbStorage(config);
 
             var financeDataProviders = GetFinanceDataProviders(config);
-            var financeDataManager = GetFinanceDataManager(financeDataProviders);
+            var financeDataManager = GetFinanceDataManager(financeDataProviders, dbStorage);
 
             var publisher = GetPublisher();
             var stockInfoCache = GetStockInfoCache();
@@ -131,7 +132,7 @@ namespace HamstersRocket.ConsoleApp
 
             var report = publisher.CreateReport(stockInfos.ToArray());
             var formattedReport = publisher.FormatReport(report);
-            await storage.SaveReportAsync(formattedReport);
+            await fileStorage.SaveReportToFileAsync(formattedReport);
             await stockInfoCache.ClearAsync();
 
             output.Publish($"report saved");
@@ -168,10 +169,15 @@ namespace HamstersRocket.ConsoleApp
             return new Core.StockMarket.Tinkoff.TinkoffStockMarket(token, output);
         }
 
-        private static IStorage GetStorage()
+        private static IStorage GetFileStorage()
         {
-            var ticks = DateTime.Now.Ticks;
-            return new Core.Storage.File.StorageFile();
+            return new Core.Storage.File.Storage();
+        }
+
+        private static IStorage GetDbStorage(Models.Config config)
+        {
+            var postgres = config.Postgres;
+            return new Core.Storage.Postgres.Storage(postgres.DbConnection);
         }
 
         private static IOutput GetOutput()
@@ -183,14 +189,18 @@ namespace HamstersRocket.ConsoleApp
         {
             var finnhubToken = config.Finnhub.Tokens?.FirstOrDefault();
             var finnhubDelay = config.Finnhub.Delay;
-            if (finnhubToken == null)
+            if (finnhubToken == null || finnhubDelay == null)
             {
                 throw new ArgumentNullException();
             }
-            var finnhub = new Core.FinanceDataProvider.Finnhub.FinanceDataProvider(finnhubToken, finnhubDelay);
+            var finnhub = new Core.FinanceDataProvider.Finnhub.FinanceDataProvider(finnhubToken, finnhubDelay.Value);
 
             var yahooFinanceDelay = config.YahooFinance.Delay;
-            var yahooFinance = new Core.FinanceDataProvider.YahooFinance.FinanceDataProvider(yahooFinanceDelay);
+            if (yahooFinanceDelay == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var yahooFinance = new Core.FinanceDataProvider.YahooFinance.FinanceDataProvider(yahooFinanceDelay.Value);
 
             return new IFinanceDataProvider[] {
                 finnhub,
@@ -198,9 +208,9 @@ namespace HamstersRocket.ConsoleApp
             };
         }
 
-        private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers)
+        private static IFinanceDataManager GetFinanceDataManager(IFinanceDataProvider[] providers, IStorage storage)
         {
-            return new Contracts.FinanceDataManager.Main.FinanceDataManager(providers);
+            return new Contracts.FinanceDataManager.Main.FinanceDataManager(providers, storage);
         }
 
         private static IPublisher GetPublisher()
