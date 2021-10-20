@@ -28,6 +28,8 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             {
                 Ticker = ticker,
                 Industry = aboutCompany.Industry,
+                CompanyName = aboutCompany.Name,
+                Logo = aboutCompany.Logo,
                 CurrentPrice = currentPrice,
                 PriceTarget = targetPrice,
                 RecommendationTrend = recommendationTrend,

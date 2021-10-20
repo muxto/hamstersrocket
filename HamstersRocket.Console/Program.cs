@@ -104,6 +104,8 @@ namespace HamstersRocket.ConsoleApp
                         stockInfo = StockInfo.Create(
                             ticker,
                             companyInfo.Industry,
+                            companyInfo.CompanyName,
+                            companyInfo.Logo,
                             companyInfo.CurrentPrice,
                             companyInfo.PriceTarget,
                             companyInfo.RecommendationTrend);

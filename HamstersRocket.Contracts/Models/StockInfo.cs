@@ -5,6 +5,9 @@ namespace HamstersRocket.Contracts.Models
     public class StockInfo
     {
         public string Ticker { get; set; }
+        public string Industry { get; set; }
+        public string CompanyName { get; set; }
+        public string Logo { get; set; }
 
         public decimal CurrentPrice { get; set; }
 
@@ -19,11 +22,11 @@ namespace HamstersRocket.Contracts.Models
         public int Sell { get; set; }
         public int StrongSell { get; set; }
 
-        public string Industry { get; set; }
-
         public static StockInfo Create(
             string ticker,
             string industry,
+            string companyName,
+            string logo,
             CurrentPrice currentPrice,
             PriceTarget priceTarget,
             RecommendationTrend recommendationTrend
@@ -32,6 +35,10 @@ namespace HamstersRocket.Contracts.Models
             var stock = new StockInfo()
             {
                 Ticker = ticker,
+                Industry = industry,
+                CompanyName = companyName,
+                Logo = logo,
+
                 CurrentPrice = currentPrice.C,
 
                 TargetPriceHigh = priceTarget.TargetHigh,
@@ -45,7 +52,7 @@ namespace HamstersRocket.Contracts.Models
                 Sell = recommendationTrend.Sell,
                 StrongSell = recommendationTrend.StrongSell,
 
-                Industry = industry
+                
             };
             return stock;
         }
