@@ -4,24 +4,31 @@
     <tbody>
       <tr>
         <th>Logo</th>
-        <th>Ticker</th>
+        <th>Company</th>
         <th>Current price</th>
-        <th>Target prices</th>
+        <!--<th>Recommendation trend</th>-->
       </tr>
       <tr v-for="(item, index) in stocks" :key="index">
-        <td><img width="32" :src="item['logo']" /></td>
-        <td>
-            <div>{{ item['CompanyName'] }}</div>
-            <a target="_blank" :href="`https://finance.yahoo.com/quote/${item['ticker']}`">{{ item['ticker'] }}</a>
+        <td class="align-middle">
+            <img class="table-logo" width="32" :src="item['logo']" />
         </td>
-        <td>{{ item['currentPrice'] }}</td>
+        <td class="align-middle">
+            <div>{{ item['CompanyName'] }}</div>
+            <small class="text-muted">{{ item['ticker'] }}</small>
+        </td>
         <td>
+            <div>{{ item['currentPrice'] }}</div>
+            <div><small class="text-muted">{{ item['rs'] }}</small></div>
+            <span class="badge rounded-pill bg-success">{{ item['rt'] }}</span>
+        </td>
+        <!--<td>{{ item['rt'] }}</td>-->
+        <!--<td>
             <span class="text-danger">{{ item['pricel'] }}</span>
             ~
             <span class="text-primary">{{ item['pricem'] }}</span>
             ~
             <span class="text-success">{{ item['priceh'] }}</span>
-        </td>
+        </td>-->
       </tr>
     </tbody>
   </table>
@@ -38,3 +45,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.table-logo {
+    border-radius: 50%;
+}
+</style>

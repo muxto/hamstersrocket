@@ -288,7 +288,7 @@ export default defineComponent({
     const searchValue = ref('');
     const searchTable = computed(() => viewModel
       .value
-      .filter((result) => result.ticker.startsWith(searchValue.value)));
+      .filter((result) => result.ticker.toLowerCase().startsWith(searchValue.value.toLowerCase())));
 
     const tabs = [
       {
@@ -305,7 +305,7 @@ export default defineComponent({
       },
     ];
 
-    const currentActiveTab = ref('strongBuyPlusBuyRecs');
+    const currentActiveTab = ref('strongBuy');
 
     const switchTab = (newActiveTab: string) => {
       currentActiveTab.value = newActiveTab;
