@@ -29,7 +29,7 @@ namespace HamstersRocket.Contracts.Models
             string logo,
             CurrentPrice currentPrice,
             PriceTarget priceTarget,
-            RecommendationTrend recommendationTrend
+            Recommendations recommendationTrend
             )
         {
             var stock = new StockInfo()

@@ -12,9 +12,9 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
         public int strongSell { get; set; }
         public string period { get; set; }
 
-        public Contracts.Models.FinanceDataProvider.RecommendationTrend ToDomain()
+        public Contracts.Models.FinanceDataProvider.Recommendations ToDomain()
         {
-            var model = new Contracts.Models.FinanceDataProvider.RecommendationTrend()
+            var model = new Contracts.Models.FinanceDataProvider.Recommendations()
             {
                 StrongBuy = strongBuy,
                 Buy = buy,
@@ -22,11 +22,6 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
                 Sell = sell,
                 StrongSell = strongSell,
             };
-
-            if (DateTime.TryParse(period, out var datetime))
-            {
-                model.Period = datetime;
-            }
 
             return model;
         }

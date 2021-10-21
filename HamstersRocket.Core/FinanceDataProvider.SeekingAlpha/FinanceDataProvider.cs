@@ -99,15 +99,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
             return model.ToDomainPriceTarget();
         }
 
-        public async Task<RecommendationTrend> GetRecommendationTrends(string ticker)
+        public async Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             var model = await GetData(ticker);
             if (model == null)
             {
-                return new RecommendationTrend();
+                return new Recommendations();
             }
 
-            return model.ToDomainRecommendationTrend();
+            return model.ToDomainRecommendations();
         }
     }
 }

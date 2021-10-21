@@ -22,21 +22,20 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
             return model;
         }
 
-        public Contracts.Models.FinanceDataProvider.RecommendationTrend ToDomainRecommendationTrend()
+        public Contracts.Models.FinanceDataProvider.Recommendations ToDomainRecommendations()
         {
             if (data == null)
             {
-                return new Contracts.Models.FinanceDataProvider.RecommendationTrend();
+                return new Contracts.Models.FinanceDataProvider.Recommendations();
             }
 
-            return new Contracts.Models.FinanceDataProvider.RecommendationTrend
+            return new Contracts.Models.FinanceDataProvider.Recommendations
             {
                 StrongBuy = TryParse(data.analysts_buy),
                 Buy = TryParse(data.analysts_outperform),
                 Hold = TryParse(data.analysts_hold),
                 Sell = TryParse(data.analysts_underperform),
                 StrongSell = TryParse(data.analysts_sell),
-                Period = DateTime.Now
             };
         }
 

@@ -22,7 +22,7 @@ namespace HamstersRocket.Core.Storage.File
             throw new NotImplementedException();
         }
 
-        public Task<RecommendationTrend> GetRecommendationTrendAsync(string ticker)
+        public Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             throw new NotImplementedException();
         }
@@ -32,17 +32,7 @@ namespace HamstersRocket.Core.Storage.File
             await System.IO.File.WriteAllTextAsync("report.json", report);
         }
 
-        public Task SetAboutCompanyAsync(string ticker)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task SetAboutCompanyAsync(string ticker, AboutCompany aboutCompany)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetCurrentPriceAsync(DateTime date, string ticker)
         {
             throw new NotImplementedException();
         }
@@ -52,22 +42,12 @@ namespace HamstersRocket.Core.Storage.File
             throw new NotImplementedException();
         }
 
-        public Task SetPriceTargetAsync(DateTime date, string ticker)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task SetPriceTargetAsync(DateTime date, string ticker, PriceTarget priceTarget)
         {
             throw new NotImplementedException();
         }
 
-        public Task SetRecommendationTrendAsync(DateTime date, string ticker)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetRecommendationTrendAsync(DateTime date, string ticker, RecommendationTrend recommendationTrend)
+        public Task SetRecommendationsAsync(DateTime date, string ticker, Recommendations recommendations)
         {
             throw new NotImplementedException();
         }

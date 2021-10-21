@@ -1,5 +1,6 @@
 ﻿using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataManager;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +23,14 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             var yahooFinance = dataProviders.First(x => x.Provider == FinanceDataProviders.YahooFinance);
 
             var currentPrice = await yahooFinance.GetCurrentPriceAsync(ticker);
-            var recommendationTrend = await finnhub.GetRecommendationTrends(ticker);
+
+            var recommendationTrend = await storage.GetRecommendationsAsync(ticker);
+            if (recommendationTrend == null)
+            {
+                recommendationTrend = await finnhub.GetRecommendationsAsync(ticker);
+                await storage.SetRecommendationsAsync(DateTime.Now, ticker, recommendationTrend);
+            }
+
             var targetPrice = await yahooFinance.GetPriceTargetAsync(ticker);
 
             var aboutCompany = await storage.GetAboutCompanyAsync(ticker);
@@ -40,7 +48,7 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
                 Logo = aboutCompany.Logo,
                 CurrentPrice = currentPrice,
                 PriceTarget = targetPrice,
-                RecommendationTrend = recommendationTrend,
+                Recommendations = recommendationTrend,
             };
 
             return companyInfo;

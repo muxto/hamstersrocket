@@ -10,8 +10,8 @@ namespace HamstersRocket.Contracts.Domain
         Task<Models.FinanceDataProvider.CurrentPrice> GetCurrentPriceAsync(string ticker);
         Task SetCurrentPriceAsync(DateTime date, string ticker, Models.FinanceDataProvider.CurrentPrice currentPrice);
 
-        Task<Models.FinanceDataProvider.RecommendationTrend> GetRecommendationTrendAsync (string ticker);
-        Task SetRecommendationTrendAsync(DateTime date, string ticker, Models.FinanceDataProvider.RecommendationTrend recommendationTrend);
+        Task<Models.FinanceDataProvider.Recommendations> GetRecommendationsAsync (string ticker);
+        Task SetRecommendationsAsync(DateTime date, string ticker, Models.FinanceDataProvider.Recommendations recommendations);
 
         Task<Models.FinanceDataProvider.AboutCompany> GetAboutCompanyAsync(string ticker);
         Task SetAboutCompanyAsync(string ticker, Models.FinanceDataProvider.AboutCompany aboutCompany);

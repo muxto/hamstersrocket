@@ -109,7 +109,7 @@ namespace HamstersRocket.ConsoleApp
                             companyInfo.Logo,
                             companyInfo.CurrentPrice,
                             companyInfo.PriceTarget,
-                            companyInfo.RecommendationTrend);
+                            companyInfo.Recommendations);
 
                         await stockInfoCache.SaveAsync(stockInfo);
                     }

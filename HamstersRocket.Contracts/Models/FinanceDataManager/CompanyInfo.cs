@@ -8,6 +8,6 @@
         public string Logo { get; set; }
         public Models.FinanceDataProvider.CurrentPrice CurrentPrice { get; set; }
         public Models.FinanceDataProvider.PriceTarget PriceTarget { get; set; }
-        public Models.FinanceDataProvider.RecommendationTrend RecommendationTrend { get; set; }
+        public Models.FinanceDataProvider.Recommendations Recommendations { get; set; }
     }
 }

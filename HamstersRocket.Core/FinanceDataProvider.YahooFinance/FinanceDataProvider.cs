@@ -85,7 +85,7 @@ namespace HamstersRocket.Core.FinanceDataProvider.YahooFinance
             return new CurrentPrice() { C = financialData.currentPrice.raw };
         }
 
-        public Task<RecommendationTrend> GetRecommendationTrends(string ticker)
+        public Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             throw new System.NotImplementedException();
         }

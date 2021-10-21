@@ -34,7 +34,6 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub
             return _token;
         }
 
-
         private async Task<T> GetJson<T>(string query)
         {
             var response = await _httpClient.GetAsync(query);
@@ -60,16 +59,16 @@ namespace HamstersRocket.Core.FinanceDataProvider.Finnhub
             return model.ToDomain();
         }
 
-        public async Task<RecommendationTrend> GetRecommendationTrends(string ticker)
+        public async Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             var token = await GetToken();
             var query = $"{_baseUrl}/stock/recommendation?symbol={ticker}&token={token}";
             var models = await GetJson<Core.FinanceDataProvider.Finnhub.Dto.RecommendationTrend[]>(query);
-            var recommendationTrends = models.Select(x => x.ToDomain()).ToArray();
+            var recommedationModel = models?
+               .OrderBy(x => x.period)
+               .FirstOrDefault();
 
-            return recommendationTrends?
-               .OrderBy(x => x.Period)
-               .FirstOrDefault() ?? new RecommendationTrend();
+            return recommedationModel?.ToDomain() ?? new Recommendations();
         }
 
         public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)

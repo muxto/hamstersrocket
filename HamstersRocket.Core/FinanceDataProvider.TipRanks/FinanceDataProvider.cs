@@ -76,7 +76,7 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks
             throw new System.NotImplementedException();
         }
 
-        public Task<RecommendationTrend> GetRecommendationTrends(string ticker)
+        public Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             throw new System.NotImplementedException();
         }

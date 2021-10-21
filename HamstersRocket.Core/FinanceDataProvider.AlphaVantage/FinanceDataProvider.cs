@@ -78,7 +78,7 @@ namespace HamstersRocket.Core.FinanceDataProvider.AlphaVantage
             return model.ToDomainPriceTarget();
         }
 
-        public Task<RecommendationTrend> GetRecommendationTrends(string ticker)
+        public Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             throw new NotImplementedException();
         }
