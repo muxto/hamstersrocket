@@ -20,7 +20,7 @@
             ~
             <span class="text-primary">{{ item['pricem'] }}</span>
             ~
-            <span class="text-success">{{ item['pricem'] }}</span>
+            <span class="text-success">{{ item['priceh'] }}</span>
         </td>
       </tr>
     </tbody>
