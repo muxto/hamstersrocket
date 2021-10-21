@@ -11,6 +11,8 @@ interface IStock {
   TargetPriceMean: number;
   TargetPriceMedian: number;
   Ticker: string;
+  Logo: string;
+  CompanyName: string;
 }
 
 interface IReport {
@@ -21,6 +23,8 @@ interface IReport {
 interface IRowModel {
   t: string;
   ind: string;
+  logo: string;
+  companyname: string;
   c: number;
   pricel: number;
   pricemean: number;

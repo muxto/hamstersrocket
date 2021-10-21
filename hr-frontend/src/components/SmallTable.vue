@@ -3,22 +3,25 @@
     <caption>{{ caption }}</caption>
     <tbody>
       <tr>
-        <th>#</th>
         <th>Logo</th>
         <th>Ticker</th>
-        <th>Industry</th>
         <th>Current price</th>
-        <th>Recommendations</th>
-        <th>My Take Profit</th>
+        <th>Target prices</th>
       </tr>
       <tr v-for="(item, index) in stocks" :key="index">
-        <td>{{ index + 1 }}</td>
         <td><img width="32" :src="item['logo']" /></td>
-        <td><a target="_blank" :href="`https://finance.yahoo.com/quote/${item['ticker']}`">{{ item['ticker'] }}</a></td>
-        <td>{{ item['industry'] }}</td>
+        <td>
+            <div>{{ item['CompanyName'] }}</div>
+            <a target="_blank" :href="`https://finance.yahoo.com/quote/${item['ticker']}`">{{ item['ticker'] }}</a>
+        </td>
         <td>{{ item['currentPrice'] }}</td>
-        <td>{{ item['rs'] }}</td>
-        <td>{{ item['mychoice'] }}</td>
+        <td>
+            <span class="text-danger">{{ item['pricel'] }}</span>
+            ~
+            <span class="text-primary">{{ item['pricem'] }}</span>
+            ~
+            <span class="text-success">{{ item['pricem'] }}</span>
+        </td>
       </tr>
     </tbody>
   </table>

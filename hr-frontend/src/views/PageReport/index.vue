@@ -19,10 +19,10 @@
       </li>
     </ul>
 
-    <stock-table
-      v-if="currentActiveTab === 'strongBuyPlusBuyRecs'"
-      caption="Stocks with maximum Buy and Strong Buy recommendations"
-      :stocks="strongBuyPlusBuyRecs"
+    <small-table
+      v-if="currentActiveTab === 'strongBuy'"
+      caption="Stocks with maximum Strong Buy recommendations"
+      :stocks="strongBuy"
     />
 
     <stock-table
@@ -65,11 +65,12 @@ import {
 } from 'vue';
 import getReport from '../../api';
 import StockTable from '@/components/StockTable.vue';
+import SmallTable from '@/components/SmallTable.vue';
 import { IReport, IRowModel, IRowViewModel } from './PageReport.types';
 
 export default defineComponent({
   name: 'PageReport',
-  components: { StockTable },
+  components: { StockTable, SmallTable },
   setup() {
     function getMyChoice(
       rt: number,
@@ -129,6 +130,8 @@ export default defineComponent({
 
         rowModel.t = row.Ticker;
         rowModel.ind = row.Industry;
+        rowModel.logo = row.Logo;
+        rowModel.companyname = row.CompanyName;
         rowModel.c = row.CurrentPrice;
         rowModel.pricel = row.TargetPriceLow;
         rowModel.pricemean = row.TargetPriceMean;
@@ -198,6 +201,8 @@ export default defineComponent({
         rowViewModel.ticker = row.t;
 
         rowViewModel.industry = row.ind === null ? '' : row.ind;
+        rowViewModel.logo = row.logo === null ? '' : row.logo;
+        rowViewModel.CompanyName = row.companyname === null ? '' : row.companyname;
 
         rowViewModel.currentPrice = row.c === 0 ? '' : `${row.c.toFixed(2)}`;
 
@@ -217,6 +222,8 @@ export default defineComponent({
           if (row.pricel !== row.priceh) {
             rowViewModel.targetPrices += ` ~ ${row.pricem.toFixed(2)} ~ ${row.priceh}`;
           }
+          rowViewModel.pricel = String(row.pricel);
+          rowViewModel.pricem = String(row.pricem.toFixed(2));
           rowViewModel.priceh = String(row.priceh);
 
           rowViewModel.targetPercents = row.percentl.toFixed(2);
@@ -275,7 +282,7 @@ export default defineComponent({
       return sorted.slice(0, 20);
     }
 
-    const strongBuyPlusBuyRecs = computed(() => prepareTableData('strongBuyPlusBuy'));
+    const strongBuy = computed(() => prepareTableData('strongBuy'));
     const mychoicePercentRecs = computed(() => prepareTableData('mychoicePercent'));
 
     const searchValue = ref('');
@@ -285,8 +292,8 @@ export default defineComponent({
 
     const tabs = [
       {
-        label: 'Stocks with maximum Buy and Strong Buy recommendations',
-        value: 'strongBuyPlusBuyRecs',
+        label: 'Stocks with maximum Strong Buy recommendations',
+        value: 'strongBuy',
       },
       {
         label: 'Stocks with maximum difference between Target Prices and Current Price',
@@ -310,7 +317,7 @@ export default defineComponent({
       tabs,
       currentActiveTab,
       switchTab,
-      strongBuyPlusBuyRecs,
+      strongBuy,
       mychoicePercentRecs,
       searchTable,
       searchValue,
