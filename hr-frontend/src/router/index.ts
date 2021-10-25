@@ -11,9 +11,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/ticker/:id',
     name: 'PageTicker',
     // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
+    // this generates a separate chunk (ticker.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/PageTicker.vue'),
+    component: () => import(/* webpackChunkName: "ticker" */ '../views/PageTicker.vue'),
+  },
+  {
+    path: '/about',
+    name: 'PageAbout',
+    // route level code-splitting
+    // this generates a separate chunk (ticker.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/PageAbout/index.vue'),
   },
 ];
 

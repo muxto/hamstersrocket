@@ -1,9 +1,11 @@
 <template>
   <div class="container">
     <h1 align="center">Hamster's Rocket!</h1>
-    <h3 align="center">I hope it helps to find best-expectations-profit stocks</h3>
+    <p class="text-center mb-5">
+      Сервис помогает иногда найти недооценные компании,
+      показывая соотношение Прогнозы аналитиков / текущая цена.</p>
 
-    <h2 class="mb-3">{{ updatedate }}</h2>
+    <p class="mb-3">Дата последнего обновления: {{ updatedate }}</p>
 
     <ul class="nav nav-tabs mb-3">
       <li
@@ -21,13 +23,13 @@
 
     <small-table
       v-if="currentActiveTab === 'strongBuy'"
-      caption="Stocks with maximum Strong Buy recommendations"
+      caption="Лучшие акции по количеству рейтингов Strong Buy от аналитиков"
       :stocks="strongBuy"
     />
 
-    <stock-table
+    <best-table
       v-if="currentActiveTab === 'mychoicePercentRecs'"
-      caption="Stocks with maximum difference between Target Prices and Current Price"
+      caption="Самые недооценённые акции по версии Hamster's Rocket"
       :stocks="mychoicePercentRecs"
     />
 
@@ -37,20 +39,20 @@
           type="text"
           class="form-control"
           id="searchInput"
-          placeholder="Type ticker for search"
+          placeholder="Тикер компании"
           v-model="searchValue"
         >
-        <label for="searchInput">Type ticker for search</label>
+        <label for="searchInput">Тикер компании</label>
       </div>
 
       <stock-table
         v-if="searchTable.length"
-        caption="Search results"
+        caption="Результаты поиска"
         :stocks="searchTable"
       />
 
       <div v-else class="alert alert-danger" role="alert">
-        No results found.
+        Результаты не найдены.
       </div>
     </template>
   </div>
@@ -66,11 +68,12 @@ import {
 import getReport from '../../api';
 import StockTable from '@/components/StockTable.vue';
 import SmallTable from '@/components/SmallTable.vue';
+import BestTable from '@/components/BestTable.vue';
 import { IReport, IRowModel, IRowViewModel } from './PageReport.types';
 
 export default defineComponent({
   name: 'PageReport',
-  components: { StockTable, SmallTable },
+  components: { StockTable, SmallTable, BestTable },
   setup() {
     function getMyChoice(
       rt: number,
@@ -292,20 +295,20 @@ export default defineComponent({
 
     const tabs = [
       {
-        label: 'Stocks with maximum Strong Buy recommendations',
-        value: 'strongBuy',
-      },
-      {
-        label: 'Stocks with maximum difference between Target Prices and Current Price',
+        label: '#1',
         value: 'mychoicePercentRecs',
       },
       {
-        label: 'Search',
+        label: '#2',
+        value: 'strongBuy',
+      },
+      {
+        label: 'Поиск по тикеру',
         value: 'search',
       },
     ];
 
-    const currentActiveTab = ref('strongBuy');
+    const currentActiveTab = ref('mychoicePercentRecs');
 
     const switchTab = (newActiveTab: string) => {
       currentActiveTab.value = newActiveTab;
