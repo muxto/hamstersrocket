@@ -19,7 +19,9 @@
         </td>
         <td>
             <div>{{ item['currentPrice'] }}</div>
-            <div><small class="text-muted">{{ item['rs'] }}</small></div>
+            <div>
+              <small class="text-muted">{{ item['targetPrices'] }}</small>
+            </div>
             <span class="badge rounded-pill bg-success">{{ item['rt'] }}</span>
         </td>
         <!--<td>{{ item['rt'] }}</td>-->
