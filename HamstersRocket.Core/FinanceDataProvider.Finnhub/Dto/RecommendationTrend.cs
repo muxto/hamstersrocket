@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
+﻿namespace HamstersRocket.Core.FinanceDataProvider.Finnhub.Dto
 {
     public class RecommendationTrend
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
 {
@@ -13,10 +12,10 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha.Dto
 
             var model = new Contracts.Models.FinanceDataProvider.PriceTarget()
             {
-                TargetHigh = targetPrice,
-                TargetLow = targetPrice,
-                TargetMean = targetPrice,
-                TargetMedian = targetPrice
+                High = targetPrice,
+                Low = targetPrice,
+                Mean = targetPrice,
+                Median = targetPrice
             };
 
             return model;

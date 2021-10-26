@@ -29,10 +29,10 @@ namespace HamstersRocket.Core.FinanceDataProvider.YahooFinance.Dto
         {
             var model = new PriceTarget()
             {
-                TargetHigh = targetHighPrice?.raw ?? default,
-                TargetLow = targetLowPrice?.raw ?? default,
-                TargetMean = targetMeanPrice?.raw ?? default,
-                TargetMedian = targetMedianPrice?.raw ?? default,
+                High = targetHighPrice?.raw ?? default,
+                Low = targetLowPrice?.raw ?? default,
+                Mean = targetMeanPrice?.raw ?? default,
+                Median = targetMedianPrice?.raw ?? default,
             };
 
             return model;

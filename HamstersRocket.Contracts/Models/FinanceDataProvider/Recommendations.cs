@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HamstersRocket.Contracts.Models.FinanceDataProvider
+﻿namespace HamstersRocket.Contracts.Models.FinanceDataProvider
 {
     public class Recommendations
     {

@@ -13,10 +13,10 @@
         {
             var model = new Contracts.Models.FinanceDataProvider.PriceTarget()
             {
-                TargetHigh = targetHigh,
-                TargetLow = targetLow,
-                TargetMean = targetMean,
-                TargetMedian = targetMedian,
+                High = targetHigh,
+                Low = targetLow,
+                Mean = targetMean,
+                Median = targetMedian,
             };
 
             return model;

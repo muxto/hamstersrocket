@@ -36,7 +36,12 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
                 await storage.SetRecommendationsAsync(DateTime.Now, ticker, recommendationTrend);
             }
 
-            var targetPrice = await yahooFinance.GetPriceTargetAsync(ticker);
+            var targetPrice = await storage.GetPriceTargetAsync(ticker);
+            if (targetPrice == null)
+            {
+                targetPrice = await yahooFinance.GetPriceTargetAsync(ticker);
+                await storage.SetPriceTargetAsync(DateTime.Now, ticker, targetPrice);
+            }
 
             var aboutCompany = await storage.GetAboutCompanyAsync(ticker);
             if (aboutCompany == null)

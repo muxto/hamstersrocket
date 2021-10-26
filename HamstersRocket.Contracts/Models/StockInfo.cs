@@ -41,10 +41,10 @@ namespace HamstersRocket.Contracts.Models
 
                 CurrentPrice = currentPrice.C,
 
-                TargetPriceHigh = priceTarget.TargetHigh,
-                TargetPriceMean = priceTarget.TargetMean,
-                TargetPriceMedian = priceTarget.TargetMedian,
-                TargetPriceLow = priceTarget.TargetLow,
+                TargetPriceHigh = priceTarget.High,
+                TargetPriceMean = priceTarget.Mean,
+                TargetPriceMedian = priceTarget.Median,
+                TargetPriceLow = priceTarget.Low,
 
                 StrongBuy = recommendationTrend.StrongBuy,
                 Buy = recommendationTrend.Buy,

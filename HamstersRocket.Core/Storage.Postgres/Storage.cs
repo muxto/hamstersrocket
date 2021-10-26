@@ -84,7 +84,7 @@ namespace HamstersRocket.Core.Storage.Postgres
             {
                 var query =
                     "SELECT cp.id, cp.ticker_id, cp.open, cp.close, cp.high, cp.low, cp.previous_close, cp.date, cp.date_added " +
-                    "FROM current_price cp INNER JOIN companies c ON cp.ticker_id = c.id " +
+                    "FROM current_prices cp INNER JOIN companies c ON cp.ticker_id = c.id " +
                     "WHERE c.ticker = @ticker AND cp.date = @date; ";
 
                 var param = new
@@ -118,7 +118,7 @@ namespace HamstersRocket.Core.Storage.Postgres
             using (var connection = new NpgsqlConnection(dbConnection))
             {
                 var query =
-                    "INSERT INTO current_price(ticker_id, open, close, high, low, previous_close, date, date_added) " +
+                    "INSERT INTO current_prices(ticker_id, open, close, high, low, previous_close, date, date_added) " +
                     "SELECT c.id, @open, @close, @high, @low, @previous_close, @date, now() " +
                     "FROM companies c " +
                     "WHERE c.ticker = @ticker; ";
@@ -200,14 +200,64 @@ namespace HamstersRocket.Core.Storage.Postgres
             }
         }
 
-        public Task<PriceTarget> GetPriceTargetAsync(string ticker)
+        public async Task<PriceTarget> GetPriceTargetAsync(string ticker)
         {
-            throw new NotImplementedException();
+            var date = DateTime.Now.Date;
+
+            using (var connection = new NpgsqlConnection(dbConnection))
+            {
+                var query =
+                    "SELECT tp.id, tp.ticker_id, tp.high, tp.low, tp.mean, tp.median, tp.date, tp.date_added " +
+                    "FROM target_prices tp INNER JOIN companies c ON tp.ticker_id = c.id " +
+                    "WHERE c.ticker = @ticker AND tp.date = @date; ";
+
+                var param = new
+                {
+                    ticker = ticker,
+                    date = date
+                };
+
+                var result = await connection.QueryAsync<Dto.TargetPrice>(query, param);
+                var tp = result?.FirstOrDefault();
+                if (tp == null)
+                {
+                    return null;
+                }
+
+                return new PriceTarget()
+                {
+                    High = tp.High,
+                    Low = tp.Low,
+                    Mean = tp.Mean,
+                    Median  = tp.Median
+                };
+            }
         }
 
-        public Task SetPriceTargetAsync(DateTime date, string ticker, PriceTarget priceTarget)
+        public async Task SetPriceTargetAsync(DateTime date, string ticker, PriceTarget priceTarget)
         {
-            throw new NotImplementedException();
+            date = date.Date;
+
+            using (var connection = new NpgsqlConnection(dbConnection))
+            {
+                var query =
+                    "INSERT INTO target_prices(ticker_id, high, low, mean, median, date, date_added) " +
+                    "SELECT c.id, @high, @low, @mean, @median, @date, now() " +
+                    "FROM companies c " +
+                    "WHERE c.ticker = @ticker; ";
+
+                var param = new
+                {
+                    ticker = ticker,
+                    high = priceTarget.High,
+                    low = priceTarget.Low,
+                    mean = priceTarget.Mean,
+                    median = priceTarget.Median,
+                    date = date
+                };
+
+                await connection.ExecuteAsync(query, param);
+            }
         }
     }
 }

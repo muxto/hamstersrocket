@@ -20,10 +20,10 @@ namespace HamstersRocket.Core.FinanceDataProvider.TipRanks.Dto
         {
             var model = new PriceTarget()
             {
-                TargetHigh = High ?? default,
-                TargetLow = Low ?? default,
-                TargetMean = PriceTarget ?? default,
-                TargetMedian = PriceTarget ?? default,
+                High = High ?? default,
+                Low = Low ?? default,
+                Mean = PriceTarget ?? default,
+                Median = PriceTarget ?? default,
             };
 
             return model;
