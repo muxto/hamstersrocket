@@ -76,14 +76,66 @@ namespace HamstersRocket.Core.Storage.Postgres
             }
         }
 
-        public Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
+        public async Task<CurrentPrice> GetCurrentPriceAsync(string ticker)
         {
-            throw new NotImplementedException();
+            var date = DateTime.Now.Date;
+
+            using (var connection = new NpgsqlConnection(dbConnection))
+            {
+                var query =
+                    "SELECT cp.id, cp.ticker_id, cp.open, cp.close, cp.high, cp.low, cp.previous_close, cp.date, cp.date_added " +
+                    "FROM current_price cp INNER JOIN companies c ON cp.ticker_id = c.id " +
+                    "WHERE c.ticker = @ticker AND cp.date = @date; ";
+
+                var param = new
+                {
+                    ticker = ticker,
+                    date = date
+                };
+
+                var result = await connection.QueryAsync<Dto.CurrentPrice>(query, param);
+                var cp = result?.FirstOrDefault();
+                if (cp == null)
+                {
+                    return null;
+                }
+
+                return new CurrentPrice()
+                {
+                    O = cp.Open,
+                    C = cp.Close,
+                    H = cp.High,
+                    L = cp.Low,
+                    PC = cp.Previous_close
+                };
+            }
         }
 
-        public Task SetCurrentPriceAsync(DateTime date, string ticker, CurrentPrice currentPrice)
+        public async Task SetCurrentPriceAsync(DateTime date, string ticker, CurrentPrice currentPrice)
         {
-            throw new NotImplementedException();
+            date = date.Date;
+
+            using (var connection = new NpgsqlConnection(dbConnection))
+            {
+                var query =
+                    "INSERT INTO current_price(ticker_id, open, close, high, low, previous_close, date, date_added) " +
+                    "SELECT c.id, @open, @close, @high, @low, @previous_close, @date, now() " +
+                    "FROM companies c " +
+                    "WHERE c.ticker = @ticker; ";
+
+                var param = new
+                {
+                    ticker = ticker,
+                    open = currentPrice.O,
+                    close = currentPrice .C,
+                    high = currentPrice.H,
+                    low = currentPrice.L,
+                    previous_close = currentPrice.PC,
+                    date = date
+                };
+
+                await connection.ExecuteAsync(query, param);
+            }
         }
 
         public async Task<Recommendations> GetRecommendationsAsync(string ticker)

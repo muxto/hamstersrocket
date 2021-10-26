@@ -22,7 +22,12 @@ namespace HamstersRocket.Contracts.FinanceDataManager.Main
             var finnhub = dataProviders.First(x => x.Provider == FinanceDataProviders.Finnhub);
             var yahooFinance = dataProviders.First(x => x.Provider == FinanceDataProviders.YahooFinance);
 
-            var currentPrice = await yahooFinance.GetCurrentPriceAsync(ticker);
+            var currentPrice = await storage.GetCurrentPriceAsync(ticker);
+            if (currentPrice == null)
+            {
+                currentPrice= await yahooFinance.GetCurrentPriceAsync(ticker);
+                await storage.SetCurrentPriceAsync(DateTime.Now, ticker, currentPrice);
+            }
 
             var recommendationTrend = await storage.GetRecommendationsAsync(ticker);
             if (recommendationTrend == null)
