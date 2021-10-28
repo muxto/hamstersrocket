@@ -13,7 +13,10 @@
       </tr>
       <tr v-for="(item, index) in stocks" :key="index">
         <td>{{ index + 1 }}</td>
-        <td><img width="32" :src="item['logo']" /></td>
+        <td>
+          <img v-if="item['logo']" class="table-logo" width="32" :src="item['logo']" />
+          <img v-else width="32" src="@/assets/business-case.png" />
+        </td>
         <td><a target="_blank" :href="`https://finance.yahoo.com/quote/${item['ticker']}`">{{ item['ticker'] }}</a></td>
         <td>{{ item['industry'] }}</td>
         <td>{{ item['currentPrice'] }}</td>
