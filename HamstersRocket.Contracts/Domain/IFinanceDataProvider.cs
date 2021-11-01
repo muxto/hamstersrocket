@@ -9,7 +9,11 @@ namespace HamstersRocket.Contracts.Domain
 
         Task<PriceTarget> GetPriceTargetAsync(string ticker);
 
+        Task<PriceTarget[]> GetPriceTargetsAsync(string[] tickers);
+
         Task<CurrentPrice> GetCurrentPriceAsync(string ticker);
+
+        Task<CurrentPrice[]> GetCurrentPricesAsync(string[] tickers);
 
         Task<Recommendations> GetRecommendationsAsync(string ticker);
 

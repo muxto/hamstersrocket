@@ -94,5 +94,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.YahooFinance
         {
             throw new System.NotImplementedException();
         }
+
+        public Task<PriceTarget[]> GetPriceTargetsAsync(string[] tickers)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<CurrentPrice[]> GetCurrentPricesAsync(string[] tickers)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

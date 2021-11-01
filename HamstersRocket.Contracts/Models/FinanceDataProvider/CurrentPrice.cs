@@ -16,5 +16,7 @@
 
         // Previous close price
         public decimal PC { get; set; }
+
+        public string Ticker { get; set; }
     }
 }

@@ -7,5 +7,7 @@ namespace HamstersRocket.Contracts.Domain
     {
         /// <exception cref="System.Net.Http.HttpRequestException"></exception>
         Task<CompanyInfo> GetCompanyInfoAsync(string ticker);
+
+        Task FillData(string[] tickers);
     }
 }

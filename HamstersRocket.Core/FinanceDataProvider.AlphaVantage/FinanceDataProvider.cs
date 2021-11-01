@@ -82,5 +82,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.AlphaVantage
         {
             throw new NotImplementedException();
         }
+
+        public Task<PriceTarget[]> GetPriceTargetsAsync(string[] tickers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CurrentPrice[]> GetCurrentPricesAsync(string[] tickers)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

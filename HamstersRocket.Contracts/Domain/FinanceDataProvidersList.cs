@@ -6,6 +6,7 @@
         TipRanks,
         SeekingAlpha,
         AlphaVantage,
-        YahooFinance
+        YahooFinance,
+        Finscreener
     }
 }

@@ -6,5 +6,7 @@
         public decimal Low { get; set; }
         public decimal Mean { get; set; }
         public decimal Median { get; set; }
+
+        public string Ticker { get; set; }
     }
 }

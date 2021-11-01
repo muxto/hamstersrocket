@@ -6,6 +6,7 @@
         public ConfigItem Finnhub { get; set; }
         public ConfigItem AlphaVantage { get; set; }
         public ConfigItem YahooFinance { get; set; }
+        public ConfigItem Finscreener { get; set; }
         public ConfigItem Postgres { get; set; }
     }
 

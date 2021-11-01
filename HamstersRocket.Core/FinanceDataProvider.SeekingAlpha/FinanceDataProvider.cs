@@ -109,5 +109,15 @@ namespace HamstersRocket.Core.FinanceDataProvider.SeekingAlpha
 
             return model.ToDomainRecommendations();
         }
+
+        public Task<PriceTarget[]> GetPriceTargetsAsync(string[] tickers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CurrentPrice[]> GetCurrentPricesAsync(string[] tickers)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
