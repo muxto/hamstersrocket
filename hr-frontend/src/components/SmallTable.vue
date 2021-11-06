@@ -10,7 +10,8 @@
       </tr>
       <tr v-for="(item, index) in stocks" :key="index">
         <td class="align-middle">
-            <img class="table-logo" width="32" :src="item['logo']" />
+            <img v-if="item['logo']" class="table-logo" width="32" :src="item['logo']" />
+            <img v-else width="32" src="@/assets/business-case.png" />
         </td>
         <td class="align-middle">
             <div>{{ item['CompanyName'] }}</div>
