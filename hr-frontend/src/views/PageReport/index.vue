@@ -33,28 +33,10 @@
       :stocks="mychoicePercentRecs"
     />
 
-    <template v-if="currentActiveTab === 'search'">
-      <div class="form-floating mb-3">
-        <input
-          type="text"
-          class="form-control"
-          id="searchInput"
-          placeholder="Тикер компании"
-          v-model="searchValue"
-        >
-        <label for="searchInput">Тикер компании</label>
-      </div>
-
-      <stock-table
-        v-if="searchTable.length"
-        caption="Результаты поиска"
-        :stocks="searchTable"
-      />
-
-      <div v-else class="alert alert-danger" role="alert">
-        Результаты не найдены.
-      </div>
-    </template>
+    <search-tab
+      v-if="currentActiveTab === 'search'"
+      :tickersData="viewModel"
+    />
   </div>
 </template>
 
@@ -66,14 +48,14 @@ import {
   ref,
 } from 'vue';
 import getReport from '../../api';
-import StockTable from '@/components/StockTable.vue';
+import SearchTab from '@/components/SearchTab/index.vue';
 import SmallTable from '@/components/SmallTable.vue';
 import BestTable from '@/components/BestTable.vue';
 import { IReport, IRowModel, IRowViewModel } from './PageReport.types';
 
 export default defineComponent({
   name: 'PageReport',
-  components: { StockTable, SmallTable, BestTable },
+  components: { SearchTab, SmallTable, BestTable },
   setup() {
     function getMyChoice(
       rt: number,
@@ -288,11 +270,6 @@ export default defineComponent({
     const strongBuy = computed(() => prepareTableData('strongBuy'));
     const mychoicePercentRecs = computed(() => prepareTableData('mychoicePercent'));
 
-    const searchValue = ref('');
-    const searchTable = computed(() => viewModel
-      .value
-      .filter((result) => result.ticker.toLowerCase().startsWith(searchValue.value.toLowerCase())));
-
     const tabs = [
       {
         label: '#1',
@@ -322,8 +299,6 @@ export default defineComponent({
       switchTab,
       strongBuy,
       mychoicePercentRecs,
-      searchTable,
-      searchValue,
     };
   },
 });
