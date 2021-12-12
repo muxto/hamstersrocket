@@ -23,14 +23,6 @@
             <div><small class="text-muted">{{ item['rs'] }}</small></div>
             <span class="badge rounded-pill bg-success">{{ item['rt'] }}</span>
         </td>
-        <!--<td>{{ item['rt'] }}</td>-->
-        <!--<td>
-            <span class="text-danger">{{ item['pricel'] }}</span>
-            ~
-            <span class="text-primary">{{ item['pricem'] }}</span>
-            ~
-            <span class="text-success">{{ item['priceh'] }}</span>
-        </td>-->
       </tr>
     </tbody>
   </table>
