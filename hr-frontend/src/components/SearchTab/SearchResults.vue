@@ -21,7 +21,10 @@
               <span class="badge rounded-pill bg-success">{{ item['mychoicePercent'] }}</span>
             </div>
           </div>
-          <small class="text-muted aligned-text">{{ item['rs'] }}({{ item['rt'] }})</small>
+          <small class="text-muted aligned-text">
+            {{ item['rs'] }}
+            <span class="ms-1 bordered">{{ item['rt'] }}</span>
+          </small>
         </td>
       </tr>
     </tbody>
@@ -49,5 +52,11 @@ export default defineComponent({
   position: absolute;
   bottom: 0.5rem;
   right: 0.5rem;
+}
+
+.bordered {
+  border: 1px solid #6c757d;
+  padding: 0.1rem;
+  border-radius: 50%;
 }
 </style>
