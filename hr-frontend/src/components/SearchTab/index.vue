@@ -10,7 +10,7 @@
     <label for="searchInput">Тикер компании</label>
   </div>
 
-  <stock-table
+  <search-results
     v-if="searchTable.length"
     caption="Результаты поиска"
     :stocks="searchTable"
@@ -28,12 +28,12 @@ import {
   PropType,
   computed,
 } from 'vue';
-import StockTable from '@/components/StockTable.vue';
+import SearchResults from './SearchResults.vue';
 import { IRowViewModel } from '@/views/PageReport/PageReport.types';
 
 export default defineComponent({
   name: 'SearchTab',
-  components: { StockTable },
+  components: { SearchResults },
   props: {
     tickersData: {
       type: Array as PropType<IRowViewModel[]>,

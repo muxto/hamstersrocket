@@ -73,7 +73,7 @@ export default defineComponent({
 
       if (percentm < 10) return 0;
 
-      const c = percentm * 0.9;
+      const c = percentm;
 
       return c;
     }
@@ -229,8 +229,8 @@ export default defineComponent({
             rowViewModel.mychoicePercent = '';
           } else {
             const p = row.c + row.c * (row.mychoice / 100);
-            rowViewModel.mychoice = `${p.toFixed(2)} ( ${row.mychoice.toFixed(2)} %)`;
-            rowViewModel.mychoicePercent = String(row.mychoice);
+            rowViewModel.mychoice = `${p.toFixed(2)}`;
+            rowViewModel.mychoicePercent = `${row.mychoice.toFixed(2)} %`;
           }
         }
 
