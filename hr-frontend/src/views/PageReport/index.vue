@@ -230,7 +230,7 @@ export default defineComponent({
           } else {
             const p = row.c + row.c * (row.mychoice / 100);
             rowViewModel.mychoice = `${p.toFixed(2)}`;
-            rowViewModel.mychoicePercent = `${row.mychoice.toFixed(2)} %`;
+            rowViewModel.mychoicePercent = `${row.mychoice.toFixed(2)}`;
           }
         }
 
