@@ -18,7 +18,7 @@
             <span>{{ item['currentPrice'] }}</span>
             <div class="d-flex justify-content-between align-items-center">
               <span class="text-muted me-2">{{ item['mychoice'] }}</span>
-              <span class="badge rounded-pill bg-success">{{ item['mychoicePercent'] }}</span>
+              <span class="badge rounded-pill bg-success">{{ item['mychoicePercent'] }} %</span>
             </div>
           </div>
           <small class="text-muted aligned-text">
