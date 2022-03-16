@@ -1,12 +1,28 @@
 ﻿using HamstersRocket.Contracts.Domain;
+using HamstersRocket.Contracts.Models;
 using HamstersRocket.Contracts.Models.FinanceDataProvider;
+using HamstersRocket.Contracts.Models.Storage;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HamstersRocket.Core.Storage.File
 {
-    public class Storage : IStorage
+    public class Storage : IStorage 
     {
+        public async Task CreateReportAsync(StockInfo[] stocks)
+        {
+            var report = new Report()
+            {
+                UpdateDate = DateTime.Now,
+                Stocks = stocks
+            };
+
+            var json = JsonSerializer.Serialize(report);
+            
+            await System.IO.File.WriteAllTextAsync("report.json", json);
+        }
+
         public Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
             throw new NotImplementedException();
@@ -25,11 +41,6 @@ namespace HamstersRocket.Core.Storage.File
         public Task<Recommendations> GetRecommendationsAsync(string ticker)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task SaveReportToFileAsync(string report)
-        {
-            await System.IO.File.WriteAllTextAsync("report.json", report);
         }
 
         public Task SetAboutCompanyAsync(string ticker, AboutCompany aboutCompany)

@@ -62,7 +62,6 @@ namespace HamstersRocket.ConsoleApp
             var financeDataProviders = GetFinanceDataProviders(output, config);
             var financeDataManager = GetFinanceDataManager(output, financeDataProviders, dbStorage);
 
-            var publisher = GetPublisher();
             var stockInfoCache = GetStockInfoCache();
 
             var tickers = await stockMarket.GetTickersAsync();
@@ -133,9 +132,7 @@ namespace HamstersRocket.ConsoleApp
                 tryCount = 0;
             }
 
-            var report = publisher.CreateReport(stockInfos.ToArray());
-            var formattedReport = publisher.FormatReport(report);
-            await fileStorage.SaveReportToFileAsync(formattedReport);
+            await fileStorage.CreateReportAsync(stockInfos.ToArray());
             await stockInfoCache.ClearAsync();
 
             output.Publish($"report saved");
@@ -223,11 +220,6 @@ namespace HamstersRocket.ConsoleApp
         private static IFinanceDataManager GetFinanceDataManager(IOutput output, IFinanceDataProvider[] providers, IStorage storage)
         {
             return new Contracts.FinanceDataManager.Main.FinanceDataManager(output, providers, storage);
-        }
-
-        private static IPublisher GetPublisher()
-        {
-            return new HamstersRocket.Core.Publisher.Json.Publisher();
         }
 
         private static IStockInfoCache GetStockInfoCache()

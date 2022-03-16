@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HamstersRocket.Contracts.Models.Publisher
+namespace HamstersRocket.Contracts.Models.Storage
 {
     public class Report
     {

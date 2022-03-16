@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Npgsql;
 using Dapper;
 using System.Linq;
+using HamstersRocket.Contracts.Models;
 
 namespace HamstersRocket.Core.Storage.Postgres
 {
@@ -16,12 +17,6 @@ namespace HamstersRocket.Core.Storage.Postgres
         {
             this.dbConnection = dbConnection;
         }
-
-        public Task SaveReportToFileAsync(string report)
-        {
-            throw new NotImplementedException();
-        }
-
 
         public async Task<AboutCompany> GetAboutCompanyAsync(string ticker)
         {
@@ -258,6 +253,11 @@ namespace HamstersRocket.Core.Storage.Postgres
 
                 await connection.ExecuteAsync(query, param);
             }
+        }
+
+        public Task CreateReportAsync(StockInfo[] stockInfos)
+        {
+            throw new NotImplementedException();
         }
     }
 }

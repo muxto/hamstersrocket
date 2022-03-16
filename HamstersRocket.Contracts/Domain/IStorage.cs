@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HamstersRocket.Contracts.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace HamstersRocket.Contracts.Domain
 {
-    public interface IStorage
+    public interface IStorage 
     {
-        Task SaveReportToFileAsync(string report);
+        Task CreateReportAsync(StockInfo[] stockInfos);
 
         Task<Models.FinanceDataProvider.CurrentPrice> GetCurrentPriceAsync(string ticker);
         Task SetCurrentPriceAsync(DateTime date, string ticker, Models.FinanceDataProvider.CurrentPrice currentPrice);
