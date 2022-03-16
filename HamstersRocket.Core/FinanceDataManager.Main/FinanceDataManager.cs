@@ -1,6 +1,5 @@
 ﻿using HamstersRocket.Contracts.Domain;
 using HamstersRocket.Contracts.Models.FinanceDataManager;
-using HamstersRocket.Contracts.Models.FinanceDataProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;

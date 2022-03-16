@@ -51,8 +51,6 @@ namespace HamstersRocket.Contracts.Models
                 Hold = recommendationTrend.Hold,
                 Sell = recommendationTrend.Sell,
                 StrongSell = recommendationTrend.StrongSell,
-
-                
             };
             return stock;
         }

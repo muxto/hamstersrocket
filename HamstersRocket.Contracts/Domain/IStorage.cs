@@ -6,7 +6,7 @@ namespace HamstersRocket.Contracts.Domain
 {
     public interface IStorage 
     {
-        Task CreateReportAsync(StockInfo[] stockInfos);
+        Task CreateReportAsync(StockInfo[] stocks);
 
         Task<Models.FinanceDataProvider.CurrentPrice> GetCurrentPriceAsync(string ticker);
         Task SetCurrentPriceAsync(DateTime date, string ticker, Models.FinanceDataProvider.CurrentPrice currentPrice);
